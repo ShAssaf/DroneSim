@@ -1,6 +1,6 @@
 import requests
 
-def get_image_from_google_maps(center, zoom = "18", size ="640x640",file_name = "map.osm.png"):
+def get_image_from_google_maps(center, zoom = "18", size ="640x640",file_name = "map.png"):
     # Set the base URL for the Google Static Maps API
     base_url = "https://maps.googleapis.com/maps/api/staticmap?"
     api_key = 'AIzaSyCAjPeiMtjN6s81j9J1arK4crYnIsWc1wE'

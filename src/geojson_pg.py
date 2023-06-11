@@ -111,9 +111,9 @@ class GeoJsonParser:
         buildings = []
         for [longitude, latitude] in coordinates:
             x, y = sim_map(longitude, latitude)
-            # plot the points on the map.osm
+            # plot the points on the map
             buildings.append([x, y])
-            # map.osm.scatter(x, y, marker='o', color='blue')
+            # map.scatter(x, y, marker='o', color='blue')
         sim_map.plot([x[0] for x in buildings], [x[1] for x in buildings], marker=None, color=color)
 
     @staticmethod

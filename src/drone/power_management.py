@@ -4,16 +4,10 @@ from src.utils.util_classes import ThreeDVector
 from typing import Optional
 
 class BatteryModes(Enum):
-    emergency = 0
-    conservation = 1
-    performance = 2
+    performance = 1
+    conservation = 2
+    emergency = 3
 
-class BatteryWeights(Enum):
-    twoD_movement = 2
-    down = 3
-    up = 4
-    mode_wight = 5
-    weight = 10
 
 def power_consumption(velocity_vector: Optional[ThreeDVector], accelerate_vector, __mode, __battery):
     """this function calculates the power consumption of the drone according to the velocity vector and the mode"""
@@ -26,14 +20,23 @@ def power_consumption(velocity_vector: Optional[ThreeDVector], accelerate_vector
     battery_consumption_rate = battery_power_mw / 3600
 
     # Calculate the weight of the velocity vector for the power consumption
-    weight = BatteryWeights.weight.value
-    weight = weight + (abs(velocity_vector.x) * BatteryWeights.twoD_movement.value)
-    weight = weight + (abs(velocity_vector.y) * BatteryWeights.twoD_movement.value)
-    weight = weight + (velocity_vector.z * BatteryWeights.up.value if(velocity_vector.z < 0)
-                       else velocity_vector.z * BatteryWeights.down.value)
+    weight = 1
+    weight = weight + (abs(velocity_vector.x) * 0.01)
+    weight = weight + (abs(velocity_vector.y) * 0.01)
+    weight = weight +(velocity_vector.z * 0.03 if(velocity_vector.z<0) else velocity_vector.z * 0.01)
+
     # calculate the power consumption of the drone according to its mode
-    battery_consumption_rate = (battery_consumption_rate * weight) + __mode.value * BatteryWeights.mode_wight.value
+    if __mode == BatteryModes.performance:
+        battery_consumption_rate = battery_consumption_rate * weight + 0.2
+    elif __mode == BatteryModes.conservation:
+        battery_consumption_rate = battery_consumption_rate * weight
+    elif __mode == BatteryModes.emergency:
+        battery_consumption_rate = battery_consumption_rate * weight - 0.2
+    else:
+        raise ValueError("The mode is not defined")
+
     return battery_consumption_rate
+
 
 
 class BatteryController:

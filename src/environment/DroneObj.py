@@ -8,24 +8,15 @@ from src.utils.util_classes import InternalGPS, ThreeDVector
 
 
 class DroneSimObj(Drone):
-    def __init__(self, name, max_speed, max_vertical_speed, max_height, gps=Type[InternalGPS],
+    def __init__(self, name, battery, max_speed, max_vertical_speed, max_height, max_distance, gps=Type[InternalGPS],
                  size=Consts.BigDroneSize):
-        super().__init__(name, max_speed, max_vertical_speed, max_height, gps, size)
+        super().__init__(name, battery, max_speed, max_vertical_speed, max_height, max_distance, gps, size)
         self.in_viewport = False
         self.color = ThreeDVector(255, 0, 0)
 
-    def adjust_drone_color(self, height):
-        if height < 0 or height > self.max_height:
-            self.color = ThreeDVector(0, 0, 0)
-        else:
-            self.color = ThreeDVector(255, 0, 0)
-            if height > 255:
-                self.color = ThreeDVector(255, 255, (height % 255))
-            else:
-                self.color = ThreeDVector(255, height, 0)
-
     def draw(self, screen, viewport_x, viewport_y):
         if self.in_viewport:
+            #todo: modify drone color according to highgt
             pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=self.size,
                                center=(self.gps.location.x - viewport_x, self.gps.location.y - viewport_y))
 
@@ -39,7 +30,9 @@ class DroneSimObj(Drone):
 
 class SmallDroneSimObj(DroneSimObj):
     def __init__(self, name, gps=Type[InternalGPS]):
-        super().__init__(name, max_speed=SmallDroneDefaults.MAX_SPEED,
+        super().__init__(name, battery=SmallDroneDefaults.BATTERY,
+                         max_speed=SmallDroneDefaults.MAX_SPEED,
                          max_height=SmallDroneDefaults.MAX_HEIGHT,
+                         max_distance=SmallDroneDefaults.MAX_DISTANCE,
                          max_vertical_speed=SmallDroneDefaults.MAX_VERTICAL_SPEED,
                          gps=gps)

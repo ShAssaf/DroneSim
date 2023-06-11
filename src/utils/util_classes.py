@@ -29,11 +29,7 @@ class ThreeDVector:
 class InternalGPS:
     def __init__(self, location: Optional[ThreeDVector] = None):
         self.location = ThreeDVector() if location is None else location
-        self.initLocation = self.location
         self.velocity = ThreeDVector(0, 0, 0)
-
-    def get_init_location(self):
-        return self.initLocation
 
     def get_gps(self):
         return self.location

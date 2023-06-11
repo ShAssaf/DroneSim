@@ -6,14 +6,16 @@ from src.utils.util_classes import InternalGPS, debug_print
 
 
 class Drone:
-    def __init__(self, name, max_speed, max_vertical_speed, max_height, gps=Type[InternalGPS],
+    def __init__(self, name, battery, max_speed, max_vertical_speed, max_height, max_distance, gps=Type[InternalGPS],
                  size=Consts.BigDroneSize):
         self.name = name
         self.gps = InternalGPS() if gps is None else gps
+        self.battery = battery
         self.size = size
         self.max_speed = max_speed
         self.max_vertical_speed = max_vertical_speed
         self.max_height = max_height
+        self.max_distance = max_distance  # Todo: I think we can remove this one (Shlomo)
         self.motion_controller = MotionControl(self)
         self.power_controller = BatteryController()
 
@@ -37,18 +39,18 @@ class Drone:
 
     def calculate_gps(self, dt=1):
         self.gps.calculate_position(dt)
+        self.power_controller.calculate_battery(self.get_speed())
         if self.get_gps().z > self.max_height:
             debug_print("Drone reached max height")
         elif self.get_gps().z < 0:
             debug_print("Drone has crashed")
 
-    def calculate_power_consumption(self):
-        self.power_controller.calculate_battery(self.get_speed())
 
 class SmallDrone(Drone):
     def __init__(self, name, gps=Type[InternalGPS]):
         super().__init__(name,
                          gps=gps,
+                         battery=SmallDroneDefaults.BATTERY,
                          max_speed=SmallDroneDefaults.MAX_SPEED,
                          max_height=SmallDroneDefaults.MAX_HEIGHT,
                          max_vertical_speed=SmallDroneDefaults.MAX_VERTICAL_SPEED,
