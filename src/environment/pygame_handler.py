@@ -2,6 +2,7 @@ from typing import Type
 
 import pygame
 
+from src.RL.RL_PG import RLController
 from src.drone.Drone import Drone
 from src.environment.DroneObj import SmallDroneSimObj
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE
@@ -36,7 +37,10 @@ class PygameHandler:
         self.drones = drones_list
         pygame.display.set_caption("drone simulator")
 
+        self.rl = RLController(self.drones[self.chosen_drone_index])
+
     def start_simulation(self):
+
         while self.running:
             #self.clock.tick(self.fps)
             self.handle_events()
@@ -45,12 +49,27 @@ class PygameHandler:
             self.draw_drones()
 
     def handle_events(self):
+        if not MANUAL_DRONE:
+            # TODO: not good enough
+            self.rl.move()
+
+            # self.rl.move2()
+            # self.rl.set_drone(self.drones[self.chosen_drone_index])
+            # self.chosen_drone_index = (self.chosen_drone_index + 1) % self.drones.__len__()
+            # print("chosen drone index: ", self.chosen_drone_index
+            #       ,"drone velocity: ", self.drones[self.chosen_drone_index].gps.velocity.x, " "
+            #       ,self.drones[self.chosen_drone_index].gps.velocity.y, " ",
+            #        self.drones[self.chosen_drone_index].gps.velocity.z, " "
+            #       ,"drone location: ", self.drones[self.chosen_drone_index].gps.location.x, " "
+            #       ,self.drones[self.chosen_drone_index].gps.location.y, " "
+            #       ,self.drones[self.chosen_drone_index].gps.location.z)
+
         for event in pygame.event.get():
             # pygame.time.delay(100)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 self.running = False
-            elif event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN or event.type == self.rl.arrow_key_event:
                 self.change_modes(event)
                 if event.key == pygame.K_a:
                     self.add_drone()

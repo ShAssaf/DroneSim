@@ -12,8 +12,17 @@ class Consts:
     Z = 2
 
 
-DEBUG = False  # Set this flag to True to enable debug mode
-MANUAL_DRONE = True
+DEBUG = True  # Set this flag to True to enable debug mode
+MANUAL_DRONE = False
+
+
+class Paths:
+    MAP_BOUNDS_PATH = './data/map_bounds.csv'
+    MAP_PATH = './data/complete.jpg'
+    GEOJSON_PATH = './data/geojson/export-2.geojson'
+    BUILDINGS_GEOJSON_PATH = './data/geojson/buildings.geojson'
+    MAP_BG_HTML_FULL_PATH = '/Users/shlomo/Desktop/reps/604/data/map_bg.html'
+    MAP_HTML_FULL_PATH = '/Users/shlomo/Desktop/reps/604/data/map_no_bg.html'
 
 class BatterySpec:
     VOLTAGE = 3.7
@@ -25,6 +34,7 @@ class SmallDroneDefaults:
     MAX_SPEED = 8
     MAX_VERTICAL_SPEED = 3
     MAX_HEIGHT = 400
+    MAX_DISTANCE = 1000
 
 
 class MapConsts:
@@ -33,7 +43,6 @@ class MapConsts:
     MAP_WIDTH = 5000
     MAP_HEIGHT = 2000
     MAP_PATH = './data/NewYorkMap.jpg'
-
 
 
 class EnvironmentConsts:

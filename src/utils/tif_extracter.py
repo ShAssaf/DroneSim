@@ -47,7 +47,8 @@ tif_files, shp_dfs = find_files(tif_pdir)
 
 bounds_df = pd.DataFrame(columns=['minx', 'miny', 'maxx', 'maxy'], index=[i.split('/')[-1] for i in tif_files])
 for tif in tif_files:
-    bounds_df.loc[tif.split('/')[-1]] = find_geometry(tif.split('/')[-1], shp_dfs).bounds.values[0]
+    tif_name = tif.split('/')[-1]
+    bounds_df.loc[tif_name] = find_geometry(tif_name, shp_dfs).bounds.values[0]
 
 bounds_df.sort_values(by=['miny', 'minx'], inplace=True)
 y_image_list = []
@@ -74,14 +75,23 @@ for im in y_image_list:
 new_image.save(tif_pdir + '/' + 'complete.jpg')
 
 # next line only for new york
-shp_dfs[0].to_crs("EPSG:6347", inplace=True)
-
+# shp_dfs[0].to_crs("EPSG:6539", inplace=True) # original
+# shp_dfs[0].to_crs("EPSG:6347", inplace=True) # utm zone 18n
+shp_dfs[0].to_crs("EPSG:4326", inplace=True)  # wgs84
+# shp_dfs[0].to_file('./data' + '/new_york.shp')
+new_bounds_df = pd.DataFrame(columns=['minx', 'miny', 'maxx', 'maxy'], index=[i.split('/')[-1] for i in tif_files])
+for tif in tif_files:
+    bounds_df.loc[tif.split('/')[-1]] = find_geometry(tif.split('/')[-1], shp_dfs).bounds.values[0]
+pd.DataFrame(
+    {'minx': bounds_df['minx'].min(), 'miny': bounds_df['miny'].min(), 'maxx': bounds_df['maxx'].max(),
+     'maxy': bounds_df['maxy'].max()}, index=[0]).to_csv('./data/map_bounds.csv', index=False)
+#
 new_bounds_df = pd.DataFrame(columns=['minx', 'miny', 'maxx', 'maxy'], index=[i.split('/')[-1] for i in tif_files])
 for tif in tif_files:
     new_bounds_df.loc[tif.split('/')[-1]] = find_geometry(tif.split('/')[-1], shp_dfs).bounds.values[0]
-
-x_len = new_bounds_df['maxx'].max() - new_bounds_df['minx'].min()
-y_len = new_bounds_df['maxy'].max() - new_bounds_df['miny'].min()
+#
+# x_len = new_bounds_df['maxx'].max() - new_bounds_df['minx'].min()
+# y_len = new_bounds_df['maxy'].max() - new_bounds_df['miny'].min()
 
 actual_map_size = new_image.size
 
