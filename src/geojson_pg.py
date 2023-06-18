@@ -204,7 +204,7 @@ def convert_wgs_to_utm(lat, lon):
     return x, y
 
 
-a = GeoJsonParser()
+#a = GeoJsonParser()
 # a.plot_heat_map()
 #a.plot_map(a.get_building_coordinates('tower'))
 # # save_list_to_file(a.get_all_buildings(), 'buildings.txt')

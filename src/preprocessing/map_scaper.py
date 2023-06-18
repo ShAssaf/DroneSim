@@ -92,7 +92,7 @@ def main(mode='bg'):
         southwest_lng, southwest_lat, northeast_lng, northeast_lat = get_bounds_from_browser(driver, map_variable)
 
     # save bounds to csv
-    MapObject.set_map_bounds(map_min_lng, map_min_lat, map_max_lng, map_max_lat, 'scraper_bounds')
+    MapObject.set_map_bounds(map_min_lat, map_min_lng, map_max_lat, map_max_lng, 'scraper_bounds')
     driver.quit()
 
 

@@ -17,8 +17,11 @@ MANUAL_DRONE = False
 
 
 class Paths:
-    MAP_BOUNDS_PATH = './data/map_bounds.csv'
-    MAP_PATH = './data/complete.jpg'
+    MAP_BOUNDS_PATH = 'data/csvs/map_bounds.csv'
+    MAP_PATH = './data/maps/no_bg/no_bg_result.png'
+    MAP_BG_PATH = 'data/maps/bg/bg_result.png'
+    RESCALED_MAP_PATH = 'data/maps/no_bg/rescaled_map_1_pixel_per_{scale}_meter.png'
+    RESCALED_BG_MAP_PATH = 'data/maps/bg/rescaled_map_1_pixel_per_{scale}_meter.png'
     GEOJSON_PATH = './data/geojson/export-2.geojson'
     BUILDINGS_GEOJSON_PATH = './data/geojson/buildings.geojson'
     MAP_BG_HTML_FULL_PATH = '/Users/shlomo/Desktop/reps/604/data/map_bg.html'
