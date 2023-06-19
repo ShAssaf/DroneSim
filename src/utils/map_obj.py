@@ -139,7 +139,6 @@ class MapObject:
 
         # Remove small buildings
         cleaned = np.where(opened[..., np.newaxis] == 1, image, 255)
-        a =1
         # Save the denoised image
         # cv2.imwrite("denoised_image3.jpg", denoised_image)
         cv2.imwrite("denoised_image4.jpg", cleaned)
