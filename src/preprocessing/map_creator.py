@@ -111,7 +111,7 @@ def get_south_west_corner(geojson_path):
     return min_lat, min_long
 
 
-def main():
+def map_creator_main():
 
     # filter_geojson(Consts.Paths.GEOJSON_PATH, Consts.Paths.BUILDINGS_GEOJSON_PATH)
 
@@ -135,4 +135,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    map_creator_main()

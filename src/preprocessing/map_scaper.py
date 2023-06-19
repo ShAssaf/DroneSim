@@ -27,7 +27,7 @@ def get_bounds_from_browser(driver, map_variable):
     return map(float, bounds.split(','))
 
 
-def main(mode='bg'):
+def map_scraper_main(mode='bg'):
     if os.path.exists(f"./data/map_scaper/{mode}") is False:
         os.mkdir(f"./data/map_scaper/{mode}")
     else:
@@ -98,6 +98,6 @@ def main(mode='bg'):
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        main()
+        map_scraper_main()
     else:
-        main(mode=sys.argv[1])
+        map_scraper_main(mode=sys.argv[1])

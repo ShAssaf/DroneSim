@@ -1,6 +1,6 @@
 import os
 import sys
-
+import traceback
 from PIL import Image
 
 
@@ -16,7 +16,7 @@ def find_closest_floats(float_list):
     return closest_floats
 
 
-def main(mode='bg'):
+def map_stitcher_main(mode='bg'):
     all_files = os.listdir(f'./data/map_scaper/{mode}')
     all_files = [file for file in all_files if file.endswith('.png')]
     lats = set([float(file.split('_')[0]) for file in all_files])
@@ -43,12 +43,15 @@ def main(mode='bg'):
     for im in lat_images:
         result.paste(im, (0, y_offset))
         y_offset += im.size[1]
-    result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.png')
-    result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.tif')
+    try:
+        result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.png')
+        result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.tif')
+    except:
+        traceback.print_exc()
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        main()
+        map_stitcher_main()
     else:
-        main(mode=sys.argv[1])
+        map_stitcher_main(mode=sys.argv[1])
