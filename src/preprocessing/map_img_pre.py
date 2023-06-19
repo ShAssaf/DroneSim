@@ -19,7 +19,7 @@ def main():
     # map_stitcher_main(mode='no_bg')
     # MapObject.rescale_map_image()
     MapObject.clean_map_image(Paths.RESCALED_MAP_PATH.format(scale=1))
-    M
+
 
     pass
 
