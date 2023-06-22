@@ -89,9 +89,14 @@ class MapObject:
         MapObject.set_map_bounds(ymin, xmin, ymax, xmax, 'scraper_bounds_utm')
 
     @staticmethod
-    def rescale_map_image(path=Paths.MAP_PATH, scale_factor=1):
+    def rescale_map_image(mode='no_bg', scale_factor=1):
         """rescale the map image to the size of the map in meters such that 1 pixel = 1 meter"""
         PIL.Image.MAX_IMAGE_PIXELS = 8140416001
+
+        if mode == 'bg':
+            path = Paths.MAP_BG_PATH
+        else:
+            path = Paths.MAP_PATH
 
         MapObject.convert_coordinates_to_utm()
         image = Image.open(path)
