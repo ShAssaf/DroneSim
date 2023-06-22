@@ -112,14 +112,13 @@ class MapObject:
         image = cv2.imread(path, cv2.IMREAD_COLOR)
         indices = np.where((image[:, :, 1] > 10) & (image[:, :, 2] > 10))
         # Change the pixel values to white (255, 255, 255)
-        image[indices] = (255, 255, 255)
+        image[indices] = (0, 0, 0)
 
         # image[:,:,0] = custom_filter(image[:,:,0], 3, 1)
         # image[:, :, 0] = custom_filter(image[:, :, 0], 5, 3)
         image[:, :, 0] = custom_filter(image[:, :, 0], 10, 5)
 
-        cv2.imwrite("denoised_image_10.jpg", image)
-        pass
+        cv2.imwrite(f'{path.split(".")[0]}_building_deionised.jpg', image[:, :, 0])
 
 
 def custom_filter(img, m, k):
