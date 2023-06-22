@@ -1,12 +1,14 @@
-from src.environment.DroneObj import SmallDroneSimObj
+
 from src.environment.pygame_handler import PygameHandler
 from src.utils.util_classes import InternalGPS, ThreeDVector
+from src.environment.drones_server import DroneServer
 
 
 class Environment:
-    def __init__(self, drones: list = None):
-        self.drones = drones if drones is not None else [SmallDroneSimObj("drone0", gps=InternalGPS(ThreeDVector(500, 500, 0)))]
-        self.pygame_handler = PygameHandler(self.drones)
+    def __init__(self):
+        self.drones_server = DroneServer()
+        self.drones_server.start_server()
+        self.pygame_handler = PygameHandler(self.drones_server.clients)
 
 
 def main():

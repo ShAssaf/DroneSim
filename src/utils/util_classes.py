@@ -47,7 +47,7 @@ class InternalGPS:
         self.location.y = y
         self.location.z = z
 
-    def get_speed(self):
+    def get_velocity(self):
         return self.velocity
 
     def set_velx(self, velx):

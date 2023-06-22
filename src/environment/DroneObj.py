@@ -1,21 +1,22 @@
+import pickle
+import socket
 from typing import Type
 
 import pygame
-
-from src.drone.Drone import Drone
-from src.utils.Consts import SmallDroneDefaults, Consts, MapConsts
-from src.utils.util_classes import InternalGPS, ThreeDVector
+from src.utils.Consts import MapConsts
+from src.utils.util_classes import ThreeDVector
 
 
-class DroneSimObj(Drone):
-    def __init__(self, name, max_speed, max_vertical_speed, max_height, gps=Type[InternalGPS],
-                 size=Consts.BigDroneSize):
-        super().__init__(name, max_speed, max_vertical_speed, max_height, gps, size)
+class DroneSimObj():
+    def __init__(self, drone_socket: socket.socket):
         self.in_viewport = False
-        self.color = ThreeDVector(255, 0, 0)
+        self._socket = drone_socket
+        self.last_location = ThreeDVector(0, 0, 0)
+        self.last_velocity = ThreeDVector(0, 0, 0)
+
 
     def adjust_drone_color(self, height):
-        if height < 0 or height > self.max_height:
+        if height < 0:
             self.color = ThreeDVector(0, 0, 0)
         else:
             self.color = ThreeDVector(255, 0, 0)
@@ -26,20 +27,42 @@ class DroneSimObj(Drone):
 
     def draw(self, screen, viewport_x, viewport_y):
         if self.in_viewport:
-            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=self.size,
-                               center=(self.gps.location.x - viewport_x, self.gps.location.y - viewport_y))
+            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=5,
+                               center=(self.last_location.x - viewport_x, self.last_location.y - viewport_y))
 
     def check_in_viewport(self, viewport_x, viewport_y):
-        if viewport_x < self.gps.location.x < viewport_x + MapConsts.SCREEN_WIDTH \
-                and viewport_y < self.gps.location.y < viewport_y + MapConsts.SCREEN_HEIGHT:
+        if viewport_x < self.last_location.x < viewport_x + MapConsts.SCREEN_WIDTH \
+                and viewport_y < self.last_location.y < viewport_y + MapConsts.SCREEN_HEIGHT:
             self.in_viewport = True
         else:
             self.in_viewport = False
 
+    def get_location(self):
+        self._socket.sendall("get_location".encode())
+        # Receive the serialized object
+        received_data = self._socket.recv(4096)
+        # Deserialize the object
+        deserialized_data = pickle.loads(received_data)  # show in terminal
+        return deserialized_data
 
-class SmallDroneSimObj(DroneSimObj):
-    def __init__(self, name, gps=Type[InternalGPS]):
-        super().__init__(name, max_speed=SmallDroneDefaults.MAX_SPEED,
-                         max_height=SmallDroneDefaults.MAX_HEIGHT,
-                         max_vertical_speed=SmallDroneDefaults.MAX_VERTICAL_SPEED,
-                         gps=gps)
+    def get_velocity(self):
+        self._socket.sendall("get_velocity".encode())
+        # Receive the serialized object
+        received_data = self._socket.recv(4096)
+        # Deserialize the object
+        deserialized_data = pickle.loads(received_data)
+        return deserialized_data
+
+    def get_battery_status(self):
+        self._socket.sendall("get_battery_status".encode())
+        # Receive the serialized object
+        received_data = self._socket.recv(4096)
+        # Deserialize the object
+        deserialized_data = pickle.loads(received_data)
+        return deserialized_data
+
+    def accelerate(self, x, y, z):
+        self._socket.sendall(f"accelerate:{x},{y},{z}".encode())
+
+    def update(self):
+        self._socket.sendall(f"update".encode())

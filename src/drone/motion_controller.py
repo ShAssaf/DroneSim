@@ -7,10 +7,10 @@ class MotionControl:
         self.max_total_speed = vehicle.max_speed
 
     def accelerate(self, x, y, z):
-        if ThreeDVector(self.vehicle.get_speed().x + x, self.vehicle.get_speed().y + y, self.vehicle.get_speed().z + z)\
+        if ThreeDVector(self.vehicle.get_velocity().x + x, self.vehicle.get_velocity().y + y, self.vehicle.get_velocity().z + z)\
                 .get_magnitude() < self.max_total_speed and abs(
-                self.vehicle.get_speed().z + z) < self.max_vertical_speed:
-            self.vehicle.set_speed(self.vehicle.get_speed().x + x, self.vehicle.get_speed().y + y,
-                                   self.vehicle.get_speed().z + z)
+            self.vehicle.get_velocity().z + z) < self.max_vertical_speed:
+            self.vehicle.set_speed(self.vehicle.get_velocity().x + x, self.vehicle.get_velocity().y + y,
+                                   self.vehicle.get_velocity().z + z)
         else:
             debug_print("Drone reached max speed")
