@@ -1,6 +1,7 @@
 from typing import Type
 from src.drone.power_management import BatteryController
 from src.drone.motion_controller import MotionControl
+from src.drone.radar import TwoDRadar
 from src.utils.Consts import Consts, SmallDroneDefaults
 from src.utils.util_classes import InternalGPS, debug_print
 
@@ -10,7 +11,7 @@ class Drone:
                  size=Consts.BigDroneSize):
         self.name = name
         self.gps = InternalGPS() if gps is None else gps
-        self.radar = Radar()
+        self.radar = TwoDRadar(r=500)
         self.size = size
         self.max_speed = max_speed
         self.max_vertical_speed = max_vertical_speed
