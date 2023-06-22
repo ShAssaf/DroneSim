@@ -5,7 +5,7 @@ from src.utils.util_classes import InternalGPS, ThreeDVector
 
 class Environment:
     def __init__(self, drones: list = None):
-        self.drones = drones if drones is not None else [SmallDroneSimObj("drone0", gps=InternalGPS(ThreeDVector(1500, 1500, 0)))]
+        self.drones = drones if drones is not None else [SmallDroneSimObj("drone0", gps=InternalGPS(ThreeDVector(500, 500, 0)))]
         self.pygame_handler = PygameHandler(self.drones)
 
 

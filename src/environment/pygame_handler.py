@@ -9,8 +9,8 @@ from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE
 from src.utils.map_obj import MapObject
 from src.utils.util_classes import InternalGPS, debug_print, change_map_scale
 
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 
 
 class PygameHandler:
@@ -20,7 +20,7 @@ class PygameHandler:
         self.clock = pygame.time.Clock()
         self.fps = 120
         self.running = True
-        self.map_object = MapObject()
+        self.map_object = MapObject('data/circles.png')
         self.window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.map_surface = pygame.image.load(self.map_object.path)
         self.viewport_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -179,14 +179,15 @@ class PygameHandler:
     def draw_status(self):
         # Draw the status text
         status_text = f"drone {self.chosen_drone_index} : " + \
-                      f"position x: {self.drones[self.chosen_drone_index].gps.location.x}" + \
-                      f" y: {self.drones[self.chosen_drone_index].gps.location.y}" + \
-                      f" z: {self.drones[self.chosen_drone_index].gps.location.z}" + \
-                      f" speed x : {self.drones[self.chosen_drone_index].get_speed().x}" + \
-                      f" y : {self.drones[self.chosen_drone_index].get_speed().y}" + \
-                      f" z : {self.drones[self.chosen_drone_index].get_speed().z}" + \
-                      f" battery : {int(self.drones[self.chosen_drone_index].power_controller.get_battery_percentage())}" \
-                      + f" drones : {len(self.drones)}"
+                      f"drone{self.chosen_drone_index} " +\
+                      f"position x: {int(self.drones[self.chosen_drone_index].gps.location.x)}" +\
+                      f" y: {int(self.drones[self.chosen_drone_index].gps.location.y)}" +\
+                      f" z: {int(self.drones[self.chosen_drone_index].gps.location.z)}" +\
+                      f" speed x : {int(self.drones[self.chosen_drone_index].get_speed().x)}" +\
+                      f" y : {int(self.drones[self.chosen_drone_index].get_speed().y)}" +\
+                      f" z : {int(self.drones[self.chosen_drone_index].get_speed().z)}" +\
+                      f" battery : {int(self.drones[self.chosen_drone_index].power_controller.get_battery_percentage())}" +\
+                      f" drones : {len(self.drones)}"
         status_surface = self.FONT.render(status_text, True, (255, 255, 255), (0, 0, 0))
         self.viewport_surface.blit(status_surface, (0, 0))
 
@@ -231,13 +232,14 @@ class PygameHandler:
 
         debug_print(
             f"drone{self.chosen_drone_index} "
-            f"position x: {self.drones[self.chosen_drone_index].gps.location.x}" +
-            f" y: {self.drones[self.chosen_drone_index].gps.location.y}" +
-            f" z: {self.drones[self.chosen_drone_index].gps.location.z}" +
-            f" speed x : {self.drones[self.chosen_drone_index].get_speed().x}" +
-            f" y : {self.drones[self.chosen_drone_index].get_speed().y}" +
-            f" z : {self.drones[self.chosen_drone_index].get_speed().z}" +
-            f" battery : {self.drones[self.chosen_drone_index].power_controller.get_battery_percentage()}")
+            f"position x: {int(self.drones[self.chosen_drone_index].gps.location.x)}" +
+            f" y: {int(self.drones[self.chosen_drone_index].gps.location.y)}" +
+            f" z: {int(self.drones[self.chosen_drone_index].gps.location.z)}" +
+            f" speed x : {int(self.drones[self.chosen_drone_index].get_speed().x)}" +
+            f" y : {int(self.drones[self.chosen_drone_index].get_speed().y)}" +
+            f" z : {int(self.drones[self.chosen_drone_index].get_speed().z)}" +
+            f" battery : {int(self.drones[self.chosen_drone_index].power_controller.get_battery_percentage())}")
+
 
     def add_drone(self):
         self.drones.append(SmallDroneSimObj(name=f"drone{len(self.drones)}", gps=InternalGPS()))
