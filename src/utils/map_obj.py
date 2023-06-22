@@ -6,47 +6,17 @@ import numpy as np
 import pandas as pd
 import pyproj
 from PIL import Image
-
-from src.geojson_pg import GeoJsonParser
 from src.utils.Consts import Paths
 
 
 class MapObject:
-    def __init__(self, path=Paths.MAP_PATH):
+    def __init__(self, path=Paths.RESCALED_BG_MAP_PATH.format(scale=1)):
         self.path = path
         self.image = cv2.imread(self.path)
-        self.gj = GeoJsonParser()
         self.bounds = self.get_map_bounds()
         self.MAP_WIDTH = self.image.shape[0]
         self.MAP_HEIGHT = self.image.shape[1]
 
-    def draw_map(self):
-        # create a new figure
-        # plt.figure(figsize=(8, 8))
-        #
-        # # create a Basemap instance
-        # map = Basemap(
-        #     projection='merc', llcrnrlat=self.bounds['miny'], urcrnrlat=self.bounds['maxy']
-        #     , llcrnrlon=self.bounds['minx'], urcrnrlon=self.bounds['maxx'])
-        # img = plt.imread(self.path)
-        # map.imshow(img)
-        # for i in range(0, len(self.gj.building)):
-        #     for j in range(0, len(self.gj.building[i])):
-        #         GeoJsonParser.add_points_for_plotting(self.gj.building[i][j], map)
-        # GeoJsonParser.add_roads_for_plotting(self.gj.roads, m)
-        # Create a new empty image
-        mask = np.zeros_like(self.image)
-
-        # Define the color and thickness of the polygon
-        color = (0, 255, 0)  # green
-        thickness = 2
-
-        # Draw the polygon onto the empty image
-        cv2.fillPoly(mask, [i for i in self.gj.buildings], color)
-        result = cv2.addWeighted(self.image, 0.5, mask, 0.5, 0)
-        for i in range(0, len(self.gj.building)):
-            for j in range(0, len(self.gj.building[i])):
-                self.add_points_for_plotting(self.gj.building[i][j])
 
     @staticmethod
     def get_map_bounds():
@@ -156,10 +126,9 @@ def custom_filter(img, m, k):
                 out_img[y - pad_width - inner_start + 1:y - pad_width + inner_end,
                 x - pad_width - inner_start + 1:x - pad_width + inner_end] = 255
 
-    a = 1
     return out_img
 
 
 if __name__ == '__main__':
     map = MapObject()
-    map.draw_map()
+

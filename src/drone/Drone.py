@@ -1,4 +1,5 @@
 from typing import Type
+import time
 from src.drone.power_management import BatteryController
 from src.drone.motion_controller import MotionControl
 from src.drone.radar import TwoDRadar
@@ -37,8 +38,8 @@ class Drone:
     def set_name(self, name):
         self.name = name
 
-    def calculate_gps(self, dt=1):
-        self.gps.calculate_position(dt)
+    def calculate_gps(self):
+        self.gps.calculate_position()
         if self.get_gps().z > self.max_height:
             debug_print("Drone reached max height")
         elif self.get_gps().z < 0:
@@ -47,6 +48,7 @@ class Drone:
     def calculate_power_consumption(self):
         self.power_controller.calculate_battery(self.get_speed())
 
+
 class SmallDrone(Drone):
     def __init__(self, name, gps=Type[InternalGPS]):
         super().__init__(name,
@@ -54,4 +56,4 @@ class SmallDrone(Drone):
                          max_speed=SmallDroneDefaults.MAX_SPEED,
                          max_height=SmallDroneDefaults.MAX_HEIGHT,
                          max_vertical_speed=SmallDroneDefaults.MAX_VERTICAL_SPEED,
-                         max_distance=SmallDroneDefaults.MAX_DISTANCE)
+                         )

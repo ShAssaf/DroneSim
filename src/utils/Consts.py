@@ -13,7 +13,7 @@ class Consts:
 
 
 DEBUG = True  # Set this flag to True to enable debug mode
-MANUAL_DRONE = False
+MANUAL_DRONE = True
 
 
 class Paths:
@@ -43,8 +43,6 @@ class SmallDroneDefaults:
 class MapConsts:
     SCREEN_WIDTH = 1200
     SCREEN_HEIGHT = 700
-    MAP_WIDTH = 5000
-    MAP_HEIGHT = 2000
     MAP_PATH = './data/NewYorkMap.jpg'
 
 

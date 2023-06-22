@@ -1,5 +1,8 @@
+import time
 from typing import Optional
-from src.utils.Consts import DEBUG
+from PIL import Image
+
+from src.utils.Consts import DEBUG, Paths
 
 
 class ThreeDVector:
@@ -28,6 +31,7 @@ class ThreeDVector:
 
 class InternalGPS:
     def __init__(self, location: Optional[ThreeDVector] = None):
+        self.time = time.time()
         self.location = ThreeDVector() if location is None else location
         self.initLocation = self.location
         self.velocity = ThreeDVector(0, 0, 0)
@@ -60,7 +64,9 @@ class InternalGPS:
         self.set_vely(vely)
         self.set_velz(velz)
 
-    def calculate_position(self, dt):
+    def calculate_position(self):
+        dt = time.time() - self.time
+        self.time = time.time()
         self.location.x += self.velocity.x * dt
         self.location.y += self.velocity.y * dt
         self.location.z += self.velocity.z * dt
@@ -69,3 +75,21 @@ class InternalGPS:
 def debug_print(*args, **kwargs):
     if DEBUG:
         print(*args, **kwargs)
+
+
+def change_map_scale(scale_factor):
+    # Open the image file
+    img = Image.open(Paths.MAP_BG_PATH)
+    # Get the original dimensions of the image
+    width, height = img.size
+
+    # Calculate the new dimensions of the scaled image
+    new_width = int(width * scale_factor)
+    new_height = int(height * scale_factor)
+
+    # Resize the image using the new dimensions
+    scaled_img = img.resize((new_width, new_height))
+
+    # Save the scaled image to a file
+    scaled_img.save('/tmp/scaled_img.png')
+    return '/tmp/scaled_map.png'
