@@ -107,42 +107,50 @@ class MapObject:
 
     @staticmethod
     def clean_map_image(path=Paths.RESCALED_MAP_PATH):
+
+        # clean the image from non-building noise
         image = cv2.imread(path, cv2.IMREAD_COLOR)
-
-        indices = np.where((image[:, :, 1] > 0) & (image[:, :, 2] > 0))
-
+        indices = np.where((image[:, :, 1] > 10) & (image[:, :, 2] > 10))
         # Change the pixel values to white (255, 255, 255)
         image[indices] = (255, 255, 255)
 
-        # Convert to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        # Convert the NumPy array back to a PIL image
+        #image[:,:,0] = custom_filter(image[:,:,0], 3, 1)
+        #image[:, :, 0] = custom_filter(image[:, :, 0], 5, 3)
+        image[:, :, 0] = custom_filter(image[:, :, 0], 10, 5)
 
-        # Apply median filter for noise removal
-        # denoised_image = cv2.medianBlur(image, ksize=3)  # Adjust the kernel size as needed (e.g., 3x3, 5x5, etc.)
-
-        # Extract the dimensions of the image
-        # Define new threshold level
-        new_threshold = 200  # adjust this value as needed
-
-        # Define new structuring element size
-        new_kernel_size = (15, 15)  # adjust these values as needed
-
-        # Binarize the image with new threshold
-        _, binary = cv2.threshold(gray, new_threshold, 1, cv2.THRESH_BINARY_INV)
-
-        # Define the structuring element with new size
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, new_kernel_size)
-
-        # Perform the opening operation
-        opened = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
-
-        # Remove small buildings
-        cleaned = np.where(opened[..., np.newaxis] == 1, image, 255)
-        # Save the denoised image
-        # cv2.imwrite("denoised_image3.jpg", denoised_image)
-        cv2.imwrite("denoised_image4.jpg", cleaned)
+        cv2.imwrite("denoised_image_10.jpg", image)
         pass
+def custom_filter(img, m, k):
+    pad_width = m // 2
+    inner_start = (m - k) // 2
+    inner_end = inner_start + k
+
+    # Pad the image with appropriate value for easier calculation at the boundaries
+    img_pad = np.pad(img, pad_width=pad_width, mode='constant', constant_values=255)
+
+    h, w = img.shape
+    out_img = np.copy(img)
+
+    for y in range(pad_width, h + pad_width):
+        for x in range(pad_width, w + pad_width):
+            # Get the m*m region
+            region = img_pad[y - pad_width:y + pad_width, x - pad_width:x + pad_width]
+
+            # Get the k*k inner region
+            inner_region = region[inner_start:inner_end, inner_start:inner_end]
+
+            # Get the outer surrounding region
+            outer_region = np.concatenate((region[:inner_start, :],
+                                           region[inner_end:, :],
+                                           region[inner_start:inner_end, :inner_start],
+                                           region[inner_start:inner_end, inner_end:]), axis=None)
+
+            # Check the condition
+            if np.any(inner_region != 255) and np.all(outer_region == 255):
+                out_img[y - pad_width - inner_start + 1:y - pad_width + inner_end,x - pad_width - inner_start + 1:x - pad_width + inner_end] = 255
+
+    a =1
+    return out_img
 
 
 if __name__ == '__main__':

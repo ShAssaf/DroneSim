@@ -12,14 +12,14 @@ from src.utils.map_obj import MapObject
 
 
 
-def main():
 
+
+def main():
     # map_creator_main()
     # map_scraper_main(mode='no_bg')
     # map_stitcher_main(mode='no_bg')
     # MapObject.rescale_map_image()
     MapObject.clean_map_image(Paths.RESCALED_MAP_PATH.format(scale=1))
-
 
     pass
 

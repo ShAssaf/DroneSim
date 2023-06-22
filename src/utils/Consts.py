@@ -61,6 +61,6 @@ class EnvironmentConsts:
 #
 #     map_img.save(path)
 
-def generate_map(path):
-    map_img = Image.new('RGB', (width, height), color='white')
-    map_img.save(path)
+# def generate_map(path):
+#     map_img = Image.new('RGB', (width, height), color='white')
+#     map_img.save(path)
