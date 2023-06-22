@@ -114,12 +114,14 @@ class MapObject:
         # Change the pixel values to white (255, 255, 255)
         image[indices] = (255, 255, 255)
 
-        #image[:,:,0] = custom_filter(image[:,:,0], 3, 1)
-        #image[:, :, 0] = custom_filter(image[:, :, 0], 5, 3)
+        # image[:,:,0] = custom_filter(image[:,:,0], 3, 1)
+        # image[:, :, 0] = custom_filter(image[:, :, 0], 5, 3)
         image[:, :, 0] = custom_filter(image[:, :, 0], 10, 5)
 
         cv2.imwrite("denoised_image_10.jpg", image)
         pass
+
+
 def custom_filter(img, m, k):
     pad_width = m // 2
     inner_start = (m - k) // 2
@@ -147,9 +149,10 @@ def custom_filter(img, m, k):
 
             # Check the condition
             if np.any(inner_region != 255) and np.all(outer_region == 255):
-                out_img[y - pad_width - inner_start + 1:y - pad_width + inner_end,x - pad_width - inner_start + 1:x - pad_width + inner_end] = 255
+                out_img[y - pad_width - inner_start + 1:y - pad_width + inner_end,
+                x - pad_width - inner_start + 1:x - pad_width + inner_end] = 255
 
-    a =1
+    a = 1
     return out_img
 
 

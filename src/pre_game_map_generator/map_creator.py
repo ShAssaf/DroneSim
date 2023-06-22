@@ -83,6 +83,7 @@ def height_style_function(feature):
         # Non-polygon feature (e.g., line or point)
         return {'fillColor': 'gray', 'color': 'black', 'weight': 1.5, 'fillOpacity': 0.6}
 
+
 def get_north_east_corner(geojson_path):
     with open(geojson_path, 'r') as file:
         data = json.load(file)
@@ -96,6 +97,8 @@ def get_north_east_corner(geojson_path):
                 if point[0] > max_long:
                     max_long = point[0]
     return max_lat, max_long
+
+
 def get_south_west_corner(geojson_path):
     with open(geojson_path, 'r') as file:
         data = json.load(file)
@@ -111,27 +114,24 @@ def get_south_west_corner(geojson_path):
     return min_lat, min_long
 
 
-def map_creator_main():
-
-    # filter_geojson(Consts.Paths.GEOJSON_PATH, Consts.Paths.BUILDINGS_GEOJSON_PATH)
+def map_creator_main(geojson_path=Consts.Paths.GEOJSON_PATH):
+    filter_geojson(geojson_path, Consts.Paths.BUILDINGS_GEOJSON_PATH)
 
     # load bounds from csv
     lat_min, long_min = get_south_west_corner(Consts.Paths.BUILDINGS_GEOJSON_PATH)
     lat_max, long_max = get_north_east_corner(Consts.Paths.BUILDINGS_GEOJSON_PATH)
-    MapObject.set_map_bounds(lat_min, long_min, lat_max, long_max,Consts.Paths.BUILDINGS_GEOJSON_PATH)
+    MapObject.set_map_bounds(lat_min, long_min, lat_max, long_max, Consts.Paths.BUILDINGS_GEOJSON_PATH)
 
     map_bg = folium.Map(location=[lat_min, long_min], zoom_start=19)
     map_no_bg = folium.Map(location=[lat_min, long_min], zoom_start=19, tiles=None)
-    #map_black_CartoDB = folium.Map(location=[lat_min, long_min], zoom_start=20, tiles="CartoDB dark_matter")
     # Add GeoJSON data to the map with custom style
     folium.GeoJson(Consts.Paths.BUILDINGS_GEOJSON_PATH, style_function=height_style_function).add_to(map_bg)
     folium.GeoJson(Consts.Paths.BUILDINGS_GEOJSON_PATH, style_function=height_style_function).add_to(map_no_bg)
-    #folium.GeoJson(Consts.Paths.BUILDINGS_GEOJSON_PATH, style_function=height_style_function).add_to(map_black_CartoDB)
 
     # save the map
     map_no_bg.save("./data/map_no_bg.html")
     map_bg.save("./data/map_bg.html")
-    #map_black_CartoDB.save("./data/map_black_CartoDB.html")
+    # map_black_CartoDB.save("./data/map_black_CartoDB.html")
 
 
 if __name__ == '__main__':

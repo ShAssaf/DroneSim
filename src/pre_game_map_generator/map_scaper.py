@@ -97,7 +97,4 @@ def map_scraper_main(mode='bg'):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        map_scraper_main()
-    else:
-        map_scraper_main(mode=sys.argv[1])
+    map_scraper_main(mode=sys.argv[1])
