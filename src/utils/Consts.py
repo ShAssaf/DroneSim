@@ -1,3 +1,6 @@
+import random
+
+
 class Consts:
     BigDroneSize = 10
     SmallDroneSize = 100
@@ -5,7 +8,7 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9529
+    PORT = 9567
 
     # default drones
 

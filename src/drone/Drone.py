@@ -4,7 +4,7 @@ from src.drone.power_management import BatteryController
 from src.drone.motion_controller import MotionControl
 from src.drone.radar import TwoDRadar
 from src.utils.Consts import Consts, SmallDroneDefaults
-from src.utils.util_classes import InternalGPS, debug_print
+from src.utils.util_classes import InternalGPS, debug_print, ThreeDVector
 
 
 class Drone:
@@ -26,7 +26,7 @@ class Drone:
     def set_gps(self, x, y, z):
         self.gps.set_gps(x, y, z)
 
-    def get_speed(self):
+    def get_velocity(self):
         return self.gps.get_velocity()
 
     def set_speed(self, vel_x, vel_y, vel_z):
@@ -46,7 +46,7 @@ class Drone:
             debug_print("Drone has crashed")
 
     def calculate_power_consumption(self):
-        self.power_controller.calculate_battery(self.get_speed())
+        self.power_controller.calculate_battery(self.get_velocity())
 
 
 class SmallDrone(Drone):

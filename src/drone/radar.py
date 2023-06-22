@@ -72,12 +72,12 @@ class TwoDRadar:
                                   skiprows=1).to_numpy()
         self.distances = pd.read_csv("data/radar_pre_calculated_data/distances.csv", index_col=0, header=None,
                                      skiprows=1).to_numpy()
-        self.calculate_relative_angles(90)
+        self.calculate_relative_angles(0)
 
 
-pass
+
 # image = cv2.imread('/Users/shlomo/Documents/DroneSim/t.jpg', cv2.IMREAD_GRAYSCALE)
-a = TwoDRadar()
+# a = TwoDRadar()
 # a.update_sense_circle(image)
 
 

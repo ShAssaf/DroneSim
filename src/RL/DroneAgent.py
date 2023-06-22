@@ -1,6 +1,7 @@
 import multiprocessing
 import pickle
 import socket
+from time import sleep
 
 from src.drone.Drone import SmallDrone
 from src.utils.Consts import Consts
@@ -24,9 +25,12 @@ class DroneAgent:
     def communicate_with_server(self):
         while True:
             data = self._socket_to_server.recv(1024).decode()
+            if not data:
+                break
             if data == "get_location":
+                a = self.drone.get_gps()
                 # Serialize the object
-                serialized_data = pickle.dumps(self.drone.get_gps())
+                serialized_data = pickle.dumps(a)
                 # Send the serialized object
                 self._socket_to_server.sendall(serialized_data)
             elif data == "get_velocity":
@@ -41,7 +45,10 @@ class DroneAgent:
                 serialized_data = pickle.dumps(self.drone.name)
                 self._socket_to_server.sendall(serialized_data)
             elif data.startswith("accelerate"):
-                self.drone.motion_controller.accelerate(data.split(":")[1], data.split(" ")[2], data.split(" ")[3])
+                accelerate_vec = [float(i) for i in data.split(":")[1].split(",")]
+                self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1], accelerate_vec[2])
             elif data == "update":
                 self.drone.calculate_gps()
-                self.drone.power_controller.calculate_battery(self.drone.get_speed())
+                self.drone.power_controller.calculate_battery(self.drone.get_velocity())
+
+

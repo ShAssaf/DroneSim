@@ -14,7 +14,6 @@ class DroneSimObj():
         self.last_location = ThreeDVector(0, 0, 0)
         self.last_velocity = ThreeDVector(0, 0, 0)
 
-
     def adjust_drone_color(self, height):
         if height < 0:
             self.color = ThreeDVector(0, 0, 0)

@@ -13,6 +13,8 @@ SCREEN_HEIGHT = 1000
 
 class PygameHandler:
     def __init__(self, drones_list):
+        self.drones = drones_list
+        self.add_drone()
         pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
@@ -37,10 +39,9 @@ class PygameHandler:
         self.chosen_drone_index = 0
 
         # attributes
-        self.drones = drones_list
+
         pygame.display.set_caption("drone simulator")
-        self.add_drone()
-        sleep(3)
+
         # self.rl = RLController(self.drones[self.chosen_drone_index])
 
     def start_simulation(self):
@@ -170,8 +171,8 @@ class PygameHandler:
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            self.viewport_x = self.drones[self.chosen_drone_index].get_location.x - SCREEN_WIDTH / 2
-            self.viewport_y = self.drones[self.chosen_drone_index].get_location.y - SCREEN_HEIGHT / 2
+            self.viewport_x = self.drones[self.chosen_drone_index].get_location().x - SCREEN_WIDTH / 2
+            self.viewport_y = self.drones[self.chosen_drone_index].get_location().y - SCREEN_HEIGHT / 2
         self.viewport_surface.blit(self.map_surface, (0, 0),
                                    (self.viewport_x, self.viewport_y, SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -239,3 +240,4 @@ class PygameHandler:
 
     def add_drone(self):
         DroneAgent(name=f"drone{len(self.drones)}")
+
