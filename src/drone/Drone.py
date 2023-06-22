@@ -10,6 +10,7 @@ class Drone:
                  size=Consts.BigDroneSize):
         self.name = name
         self.gps = InternalGPS() if gps is None else gps
+        self.radar = Radar()
         self.size = size
         self.max_speed = max_speed
         self.max_vertical_speed = max_vertical_speed
