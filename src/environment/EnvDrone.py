@@ -26,7 +26,7 @@ class EnvDroneObj:
 
     def draw(self, screen, viewport_x, viewport_y):
         if self.in_viewport:
-            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=30,
+            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=10,
                                center=(self.last_location.x - viewport_x, self.last_location.y - viewport_y))
 
     def check_in_viewport(self, viewport_x, viewport_y):

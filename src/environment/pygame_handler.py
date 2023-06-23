@@ -7,15 +7,14 @@ from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE
 from src.utils.map_obj import MapObject
 from src.utils.util_classes import InternalGPS, debug_print, change_map_scale
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 500
+SCREEN_HEIGHT = 500
 
 
 class PygameHandler:
     def __init__(self, drones_list):
         self.drones = drones_list
         self.add_drone()
-        sleep(3)
         pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
@@ -51,7 +50,6 @@ class PygameHandler:
             self.handle_events()
             self.draw_map()
             self.draw_on_screen()
-            self.draw_drones()
 
     def handle_events(self):
         # if not MANUAL_DRONE:
@@ -172,24 +170,41 @@ class PygameHandler:
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            self.viewport_x = self.drones[self.chosen_drone_index].last_location.x - SCREEN_WIDTH / 2
-            self.viewport_y = self.drones[self.chosen_drone_index].last_location.y - SCREEN_HEIGHT / 2
+            x = self.drones[self.chosen_drone_index].last_location.x - SCREEN_WIDTH / 2
+            y = self.drones[self.chosen_drone_index].last_location.y - SCREEN_HEIGHT / 2
+            if x < 0:
+                x = 0
+            elif x > self.map_object.MAP_WIDTH - SCREEN_WIDTH:
+                x = self.map_object.MAP_WIDTH - SCREEN_WIDTH
+            if y < 0:
+                y = 0
+            elif y > self.map_object.MAP_HEIGHT - SCREEN_HEIGHT:
+                y = self.map_object.MAP_HEIGHT - SCREEN_HEIGHT
+            self.viewport_x = x
+            self.viewport_y = y
         self.viewport_surface.blit(self.map_surface, (0, 0),
                                    (self.viewport_x, self.viewport_y, SCREEN_WIDTH, SCREEN_HEIGHT))
 
     def draw_status(self):
         # Draw the status text
-        status_text = f"drone {self.chosen_drone_index} : " + \
+        status_text = f"drone {self.chosen_drone_index} :\n" + \
                       f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" + \
                       f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" + \
-                      f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}" + \
+                      f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}\n" + \
                       f" speed x : {int(self.drones[self.chosen_drone_index].get_velocity().x)}" + \
                       f" y : {int(self.drones[self.chosen_drone_index].get_velocity().y)}" + \
-                      f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}" + \
-                      f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}" + \
+                      f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}\n" + \
+                      f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}\n" + \
                       f" drones : {len(self.drones)}"
-        status_surface = self.FONT.render(status_text, True, (255, 255, 255), (0, 0, 0))
-        self.viewport_surface.blit(status_surface, (0, 0))
+        # Split the text into lines
+        lines = status_text.split('\n')
+
+        # Iterate over the lines
+        for i, line in enumerate(lines):
+            # Render each line separately
+            line_surface = self.FONT.render(line, True, (255, 255, 255), (0, 0, 0))
+            self.viewport_surface.blit(line_surface, (10, i * 15))
+
 
     def draw_on_screen(self):
         if (MANUAL_DRONE):
@@ -246,4 +261,3 @@ class PygameHandler:
     def add_drone(self):
         # todo: add drone in subprocess
         DroneAgent(name=f"drone{len(self.drones)}")
-

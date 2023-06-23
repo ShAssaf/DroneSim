@@ -25,8 +25,8 @@ class DroneAgent:
     def communicate_with_server(self):
 
         while True:
-            # delay to not overload the agent
-            #sleep(0.05)
+            #delay to not overload the agent
+            #sleep(0.1)
             data = self._socket_to_server.recv(1024).decode().split(';')
 
             if not data:
