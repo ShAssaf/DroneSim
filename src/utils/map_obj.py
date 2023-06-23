@@ -6,17 +6,16 @@ import numpy as np
 import pandas as pd
 import pyproj
 from PIL import Image
-from src.utils.Consts import Paths
+from src.utils.Consts import Paths, MapConsts
 
 
 class MapObject:
-    def __init__(self, path=Paths.RESCALED_BG_MAP_PATH.format(scale=1)):
+    def __init__(self, path=MapConsts.MAP_PATH):
         self.path = path
         self.image = cv2.imread(self.path)
         self.bounds = self.get_map_bounds()
         self.MAP_WIDTH = self.image.shape[0]
         self.MAP_HEIGHT = self.image.shape[1]
-
 
     @staticmethod
     def get_map_bounds():
@@ -131,4 +130,3 @@ def custom_filter(img, m, k):
 
 if __name__ == '__main__':
     map = MapObject()
-

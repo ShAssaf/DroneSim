@@ -3,7 +3,7 @@ import socket
 from typing import Type
 
 import pygame
-from src.utils.Consts import MapConsts
+from src.utils.Consts import MapConsts, Consts
 from src.utils.util_classes import ThreeDVector
 
 
@@ -26,11 +26,12 @@ class EnvDroneObj:
 
     def draw(self, screen, viewport_x, viewport_y):
         if self.in_viewport:
-            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=10,
+            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b),
+                               radius=Consts.SmallDroneSize,
                                center=(self.last_location.x - viewport_x, self.last_location.y - viewport_y))
 
     def check_in_viewport(self, viewport_x, viewport_y):
-        if viewport_x < self.last_location.x < viewport_x + MapConsts.SCREEN_WIDTH \
+        if viewport_x < self.last_location.x < viewport_x + MapConsts. SCREEN_WIDTH \
                 and viewport_y < self.last_location.y < viewport_y + MapConsts.SCREEN_HEIGHT:
             self.in_viewport = True
         else:

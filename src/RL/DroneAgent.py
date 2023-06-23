@@ -14,6 +14,9 @@ class DroneAgent:
         self._socket_to_server = None
         self.connect_to_server()
 
+
+
+
     def connect_to_server(self):
         self._socket_to_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket_to_server.connect((Consts.HOST, Consts.PORT))

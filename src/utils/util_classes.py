@@ -2,7 +2,7 @@ import time
 from typing import Optional
 from PIL import Image
 
-from src.utils.Consts import DEBUG, Paths
+from src.utils.Consts import DEBUG, Paths, MapConsts
 
 
 class ThreeDVector:
@@ -96,7 +96,7 @@ def debug_print(*args, **kwargs):
 
 def change_map_scale(scale_factor):
     # Open the image file
-    img = Image.open(Paths.MAP_BG_PATH)
+    img = Image.open(MapConsts.MAP_PATH)
     # Get the original dimensions of the image
     width, height = img.size
 
@@ -110,3 +110,23 @@ def change_map_scale(scale_factor):
     # Save the scaled image to a file
     scaled_img.save('/tmp/scaled_img.png')
     return '/tmp/scaled_map.png'
+
+
+def create_scaled_maps():
+    for i in [1,2, 4, 8]:
+        scale_factor = i
+        # Open the image file
+        img = Image.open(MapConsts.MAP_PATH)
+        # Get the original dimensions of the image
+        width, height = img.size
+
+        # Calculate the new dimensions of the scaled image
+        new_width = int(width * scale_factor)
+        new_height = int(height * scale_factor)
+
+        # Resize the image using the new dimensions
+        scaled_img = img.resize((new_width, new_height))
+
+        # Save the scaled image to a file
+        scaled_img.save(f'{Paths.TMP}/scaled_map_{i}.png')
+
