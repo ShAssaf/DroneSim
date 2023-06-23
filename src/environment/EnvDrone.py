@@ -7,7 +7,7 @@ from src.utils.Consts import MapConsts
 from src.utils.util_classes import ThreeDVector
 
 
-class DroneSimObj():
+class EnvDroneObj:
     def __init__(self, drone_socket: socket.socket):
         self.in_viewport = False
         self._socket = drone_socket
@@ -26,7 +26,7 @@ class DroneSimObj():
 
     def draw(self, screen, viewport_x, viewport_y):
         if self.in_viewport:
-            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=5,
+            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b), radius=30,
                                center=(self.last_location.x - viewport_x, self.last_location.y - viewport_y))
 
     def check_in_viewport(self, viewport_x, viewport_y):
@@ -37,15 +37,16 @@ class DroneSimObj():
             self.in_viewport = False
 
     def get_location(self):
-        self._socket.sendall("get_location".encode())
+        self._socket.sendall("get_location;".encode())
         # Receive the serialized object
         received_data = self._socket.recv(4096)
         # Deserialize the object
         deserialized_data = pickle.loads(received_data)  # show in terminal
+        self.last_location = deserialized_data
         return deserialized_data
 
     def get_velocity(self):
-        self._socket.sendall("get_velocity".encode())
+        self._socket.sendall("get_velocity;".encode())
         # Receive the serialized object
         received_data = self._socket.recv(4096)
         # Deserialize the object
@@ -53,7 +54,7 @@ class DroneSimObj():
         return deserialized_data
 
     def get_battery_status(self):
-        self._socket.sendall("get_battery_status".encode())
+        self._socket.sendall("get_battery_status;".encode())
         # Receive the serialized object
         received_data = self._socket.recv(4096)
         # Deserialize the object
@@ -61,7 +62,7 @@ class DroneSimObj():
         return deserialized_data
 
     def accelerate(self, x, y, z):
-        self._socket.sendall(f"accelerate:{x},{y},{z}".encode())
+        self._socket.sendall(f"accelerate:{x},{y},{z};".encode())
 
     def update(self):
-        self._socket.sendall(f"update".encode())
+        self._socket.sendall(f"update;".encode())

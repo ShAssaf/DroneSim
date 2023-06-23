@@ -15,6 +15,7 @@ class PygameHandler:
     def __init__(self, drones_list):
         self.drones = drones_list
         self.add_drone()
+        sleep(3)
         pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
@@ -45,7 +46,6 @@ class PygameHandler:
         # self.rl = RLController(self.drones[self.chosen_drone_index])
 
     def start_simulation(self):
-
         while self.running:
             # self.clock.tick(self.fps)
             self.handle_events()
@@ -111,6 +111,7 @@ class PygameHandler:
                     input_number = int(self.input_string)  # Convert the input string to an integer
                     if 0 <= input_number <= len(self.drones) - 1:
                         self.chosen_drone_index = input_number
+                        self.mode = EnvironmentConsts.DRONES_CONTROL
                 except ValueError:
                     pass
             debug_print("Chosen drone index: " + str(self.chosen_drone_index))
@@ -171,17 +172,17 @@ class PygameHandler:
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            self.viewport_x = self.drones[self.chosen_drone_index].get_location().x - SCREEN_WIDTH / 2
-            self.viewport_y = self.drones[self.chosen_drone_index].get_location().y - SCREEN_HEIGHT / 2
+            self.viewport_x = self.drones[self.chosen_drone_index].last_location.x - SCREEN_WIDTH / 2
+            self.viewport_y = self.drones[self.chosen_drone_index].last_location.y - SCREEN_HEIGHT / 2
         self.viewport_surface.blit(self.map_surface, (0, 0),
                                    (self.viewport_x, self.viewport_y, SCREEN_WIDTH, SCREEN_HEIGHT))
 
     def draw_status(self):
         # Draw the status text
         status_text = f"drone {self.chosen_drone_index} : " + \
-                      f"position x: {int(self.drones[self.chosen_drone_index].get_location().x)}" + \
-                      f" y: {int(self.drones[self.chosen_drone_index].get_location().y)}" + \
-                      f" z: {int(self.drones[self.chosen_drone_index].get_location().z)}" + \
+                      f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" + \
+                      f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" + \
+                      f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}" + \
                       f" speed x : {int(self.drones[self.chosen_drone_index].get_velocity().x)}" + \
                       f" y : {int(self.drones[self.chosen_drone_index].get_velocity().y)}" + \
                       f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}" + \
@@ -222,22 +223,27 @@ class PygameHandler:
             self.viewport_surface.blit(legend_surface, (0, SCREEN_HEIGHT - 70 - (Consts.FONT_SIZE * (5 - i))))
 
     def draw_drones(self):
-        for drone in self.drones:
+        for idx in range(len(self.drones)):
+            drone = self.drones[idx]
             drone.update()
+            drone.get_location()
+            drone.get_velocity()
+            self.drones[idx] = drone
             drone.check_in_viewport(self.viewport_x, self.viewport_y)
             drone.adjust_drone_color(drone.last_location.z)
             drone.draw(self.viewport_surface, self.viewport_x, self.viewport_y)
 
         debug_print(
             f"drone{self.chosen_drone_index} "
-            f"position x: {int(self.drones[self.chosen_drone_index].get_location().x)}" +
-            f" y: {int(self.drones[self.chosen_drone_index].get_location().y)}" +
-            f" z: {int(self.drones[self.chosen_drone_index].get_location().z)}" +
-            f" speed x : {int(self.drones[self.chosen_drone_index].get_velocity().x)}" +
-            f" y : {int(self.drones[self.chosen_drone_index].get_velocity().y)}" +
-            f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}" +
+            f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" +
+            f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" +
+            f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}" +
+            f" speed x : {int(self.drones[self.chosen_drone_index].last_velocity.x)}" +
+            f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
+            f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
             f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}")
 
     def add_drone(self):
+        # todo: add drone in subprocess
         DroneAgent(name=f"drone{len(self.drones)}")
 

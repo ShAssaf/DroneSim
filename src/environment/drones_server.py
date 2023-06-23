@@ -1,7 +1,7 @@
 import socket
 import multiprocessing
 from src.utils.Consts import Consts
-from src.environment.DroneObj import DroneSimObj
+from src.environment.EnvDrone import EnvDroneObj
 
 
 class DroneServer:
@@ -18,7 +18,7 @@ class DroneServer:
             s.listen()
             while True:
                 conn, addr = s.accept()
-                clients.append(DroneSimObj(conn))
+                clients.append(EnvDroneObj(conn))
                 print('drones server :Connected by', addr)
 
     def start_server(self):
