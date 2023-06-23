@@ -1,28 +1,32 @@
+from time import sleep
 from typing import Type
 
+from src.RL.DroneAgent import DroneAgent
 import pygame
-
-from src.drone.Drone import Drone
-from src.environment.DroneObj import SmallDroneSimObj
-from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE
-from src.utils.util_classes import InternalGPS, debug_print
+from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
+from src.utils.map_obj import MapObject
+from src.utils.util_classes import InternalGPS, debug_print, change_map_scale, create_scaled_maps
 
 
 class PygameHandler:
     def __init__(self, drones_list):
+        self.drones = drones_list
+        self.add_drone()
         pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
         self.fps = 120
         self.running = True
+        self.map_object = MapObject(MapConsts.MAP_PATH)
+        create_scaled_maps()
         self.window = pygame.display.set_mode((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
-        self.map_surface = pygame.image.load(MapConsts.MAP_PATH)
-        # todo: add map.osm image -> change Consts.MAP_IMG_PATH and scale if needed
+        self.map_surface = pygame.image.load(self.map_object.path)
         self.viewport_surface = pygame.Surface((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
 
         # Set up the initial position of the viewport
         self.viewport_x = 0
         self.viewport_y = 0
+        self.zoom_factor = 1
 
         # Set up the player's movement speed
         self.step_size = 80
@@ -33,20 +37,20 @@ class PygameHandler:
         self.chosen_drone_index = 0
 
         # attributes
-        self.drones = drones_list
+
         pygame.display.set_caption("drone simulator")
+
+        # self.rl = RLController(self.drones[self.chosen_drone_index])
 
     def start_simulation(self):
         while self.running:
-            #self.clock.tick(self.fps)
+            # self.clock.tick(self.fps)
             self.handle_events()
             self.draw_map()
             self.draw_on_screen()
-            self.draw_drones()
 
     def handle_events(self):
         for event in pygame.event.get():
-            # pygame.time.delay(100)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 self.running = False
@@ -88,6 +92,7 @@ class PygameHandler:
                     input_number = int(self.input_string)  # Convert the input string to an integer
                     if 0 <= input_number <= len(self.drones) - 1:
                         self.chosen_drone_index = input_number
+                        self.mode = EnvironmentConsts.DRONES_CONTROL
                 except ValueError:
                     pass
             debug_print("Chosen drone index: " + str(self.chosen_drone_index))
@@ -102,57 +107,99 @@ class PygameHandler:
         if event.key == pygame.K_DOWN:
             self.viewport_y += self.step_size
 
+        # zoom in/out
+        # Update the viewport size and position based on the zoom level
+        # zoom_level = self.zoom_factor
+        if event.key == pygame.K_x or event.key == pygame.K_z:
+            screen_center = (self.viewport_x + MapConsts.SCREEN_WIDTH / 2,
+                             self.viewport_y + MapConsts.SCREEN_HEIGHT / 2)
+            if event.key == pygame.K_x:
+                if self.zoom_factor < 8:
+                    self.zoom_factor = int(self.zoom_factor * 2)
+                    screen_center = (self.viewport_x * 2 + MapConsts.SCREEN_WIDTH / 2,
+                                     self.viewport_y * 2 + MapConsts.SCREEN_HEIGHT / 2)
+            elif event.key == pygame.K_z:
+                if self.zoom_factor > 1:
+                    self.zoom_factor = int(self.zoom_factor / 2)
+                    screen_center = (self.viewport_x / 2 + MapConsts.SCREEN_WIDTH / 2,
+                                     self.viewport_y / 2 + MapConsts.SCREEN_HEIGHT / 2)
+            self.map_surface = pygame.image.load(f'{Paths.TMP}/scaled_map_{self.zoom_factor}.png')
+            self.viewport_x = screen_center[0]
+            self.viewport_y = screen_center[1]
+            self.map_object.MAP_WIDTH = self.map_surface.get_width()
+            self.map_object.MAP_HEIGHT = self.map_surface.get_height()
+
         # Add boundaries to the viewport, so it doesn't go beyond the edges of the map.osm
         if self.viewport_x < 0:
             self.viewport_x = 0
-        elif self.viewport_x > MapConsts.MAP_WIDTH - MapConsts.SCREEN_WIDTH:
-            self.viewport_x = MapConsts.MAP_WIDTH - MapConsts.SCREEN_WIDTH
+        elif self.viewport_x > self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH:
+            self.viewport_x = self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH
         if self.viewport_y < 0:
             self.viewport_y = 0
-        elif self.viewport_y > MapConsts.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT:
-            self.viewport_y = MapConsts.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT
+        elif self.viewport_y > self.map_object.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT:
+            self.viewport_y = self.map_object.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT
 
     def handle_drones_control(self, event):
         if event.key == pygame.K_UP:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(0, -1, 0)
+            self.drones[self.chosen_drone_index].accelerate(0, -1, 0)
         if event.key == pygame.K_DOWN:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(0, 1, 0)
+            self.drones[self.chosen_drone_index].accelerate(0, 1, 0)
         if event.key == pygame.K_LEFT:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(-1, 0, 0)
+            self.drones[self.chosen_drone_index].accelerate(-1, 0, 0)
         if event.key == pygame.K_RIGHT:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(1, 0, 0)
+            self.drones[self.chosen_drone_index].accelerate(1, 0, 0)
         if event.key == pygame.K_z:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(0, 0, 1)
+            self.drones[self.chosen_drone_index].accelerate(0, 0, 1)
         if event.key == pygame.K_x:
-            self.drones[self.chosen_drone_index].motion_controller.accelerate(0, 0, -1)
+            self.drones[self.chosen_drone_index].accelerate(0, 0, -1)
 
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            self.viewport_x = self.drones[self.chosen_drone_index].gps.location.x - MapConsts.SCREEN_WIDTH / 2
-            self.viewport_y = self.drones[self.chosen_drone_index].gps.location.y - MapConsts.SCREEN_HEIGHT / 2
+            x = self.drones[self.chosen_drone_index].last_location.x - MapConsts.SCREEN_WIDTH / 2
+            y = self.drones[self.chosen_drone_index].last_location.y - MapConsts.SCREEN_HEIGHT / 2
+            if x < 0:
+                x = 0
+            elif x > self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH:
+                x = self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH
+            if y < 0:
+                y = 0
+            elif y > self.map_object.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT:
+                y = self.map_object.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT
+            self.viewport_x = x
+            self.viewport_y = y
         self.viewport_surface.blit(self.map_surface, (0, 0),
                                    (self.viewport_x, self.viewport_y, MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
 
     def draw_status(self):
         # Draw the status text
-        status_text = f"drone {self.chosen_drone_index} : " + \
-                      f"position x: {self.drones[self.chosen_drone_index].gps.location.x}" + \
-                      f" y: {self.drones[self.chosen_drone_index].gps.location.y}" + \
-                      f" z: {self.drones[self.chosen_drone_index].gps.location.z}" + \
-                      f" speed x : {self.drones[self.chosen_drone_index].get_speed().x}" + \
-                      f" y : {self.drones[self.chosen_drone_index].get_speed().y}" + \
-                      f" z : {self.drones[self.chosen_drone_index].get_speed().z}" + \
-                      f" battery : {int(self.drones[self.chosen_drone_index].power_controller.get_battery_percentage())}"\
-                      + f" drones : {len(self.drones)}"
-        status_surface = self.FONT.render(status_text, True, (255, 255, 255), (0, 0, 0))
-        self.viewport_surface.blit(status_surface, (0, 0))
+        status_text = f"drone {self.chosen_drone_index} :\n" + \
+                      f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" + \
+                      f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" + \
+                      f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}\n" + \
+                      f" speed x : {int(self.drones[self.chosen_drone_index].get_velocity().x)}" + \
+                      f" y : {int(self.drones[self.chosen_drone_index].get_velocity().y)}" + \
+                      f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}\n" + \
+                      f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}\n" + \
+                      f" drones : {len(self.drones)}"
+        # Split the text into lines
+        lines = status_text.split('\n')
+
+        # Iterate over the lines
+        for i, line in enumerate(lines):
+            # Render each line separately
+            line_surface = self.FONT.render(line, True, (255, 255, 255), (0, 0, 0))
+            self.viewport_surface.blit(line_surface, (10, i * 15))
 
     def draw_on_screen(self):
         if (MANUAL_DRONE):
+            self.draw_map()
+            self.draw_drones()
             self.draw_status()
             self.draw_menu()
             self.draw_heat_legend()
+            self.window.blit(self.viewport_surface, (0, 0))
+            pygame.display.update()
 
     def draw_menu(self):
         menu_text = ["a: add drone",
@@ -162,38 +209,40 @@ class PygameHandler:
                      "c+num+Entr: choose drone"]
         for i in range(5):
             menu_surface = self.FONT.render(menu_text[i], True, (255, 255, 255), (0, 0, 0))
-            self.viewport_surface.blit(menu_surface, (0, MapConsts.SCREEN_HEIGHT - Consts.FONT_SIZE*(5-i)))
+            self.viewport_surface.blit(menu_surface, (0, MapConsts.SCREEN_HEIGHT - Consts.FONT_SIZE * (5 - i)))
 
     def draw_heat_legend(self):
         legend_text = ["-0",
-                     "0",
-                     "255",
-                     "max",
-                     "max+"]
-        legend_color = [(0, 0, 0), (255,0,0), (255,255,0), (255,255,255), (0,0,0)]
+                       "0",
+                       "255",
+                       "max",
+                       "max+"]
+        legend_color = [(0, 0, 0), (255, 0, 0), (255, 255, 0), (255, 255, 255), (0, 0, 0)]
         for i in range(5):
             legend_surface = self.FONT.render(legend_text[i], True, (0, 190, 190), legend_color[i])
             self.viewport_surface.blit(legend_surface, (0, MapConsts.SCREEN_HEIGHT - 70 - (Consts.FONT_SIZE * (5 - i))))
 
     def draw_drones(self):
-        for drone in self.drones:
-            drone.calculate_gps()
-            drone.calculate_power_consumption()
+        for idx in range(len(self.drones)):
+            drone = self.drones[idx]
+            drone.update()
+            drone.get_location()
+            drone.get_velocity()
+            self.drones[idx] = drone
             drone.check_in_viewport(self.viewport_x, self.viewport_y)
-            drone.adjust_drone_color(drone.get_gps().z)
+            drone.adjust_drone_color(drone.last_location.z)
             drone.draw(self.viewport_surface, self.viewport_x, self.viewport_y)
-        self.window.blit(self.viewport_surface, (0, 0))
-        pygame.display.update()
 
         debug_print(
             f"drone{self.chosen_drone_index} "
-            f"position x: {self.drones[self.chosen_drone_index].gps.location.x}" +
-            f" y: {self.drones[self.chosen_drone_index].gps.location.y}" +
-            f" z: {self.drones[self.chosen_drone_index].gps.location.z}" +
-            f" speed x : {self.drones[self.chosen_drone_index].get_speed().x}" +
-            f" y : {self.drones[self.chosen_drone_index].get_speed().y}" +
-            f" z : {self.drones[self.chosen_drone_index].get_speed().z}" +
-            f" battery : {self.drones[self.chosen_drone_index].power_controller.get_battery_percentage()}")
+            f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" +
+            f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" +
+            f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}" +
+            f" speed x : {int(self.drones[self.chosen_drone_index].last_velocity.x)}" +
+            f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
+            f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
+            f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}")
 
     def add_drone(self):
-        self.drones.append(SmallDroneSimObj(name=f"drone{len(self.drones)}", gps=InternalGPS()))
+        # todo: add drone in subprocess
+        DroneAgent(name=f"drone{len(self.drones)}")
