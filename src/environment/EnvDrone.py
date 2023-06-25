@@ -13,6 +13,7 @@ class EnvDroneObj:
         self._socket = drone_socket
         self.last_location = ThreeDVector(0, 0, 0)
         self.last_velocity = ThreeDVector(0, 0, 0)
+        self.last_battery_status = 100
 
     def adjust_drone_color(self, height):
         if height < 0:
@@ -61,10 +62,15 @@ class EnvDroneObj:
         received_data = self._socket.recv(4096)
         # Deserialize the object
         deserialized_data = pickle.loads(received_data)
+        self.last_battery_status = deserialized_data
         return deserialized_data
 
     def accelerate(self, x, y, z):
-        self._socket.sendall(f"accelerate:{x},{y},{z};".encode())
+        try:
+            self._socket.sendall(f"accelerate:{x},{y},{z};".encode())
+        except Exception as e:
+            print(e)
+            self.accelerate(x, y, z)
 
     def update(self):
         self._socket.sendall(f"update;".encode())

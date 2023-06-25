@@ -1,11 +1,9 @@
-from time import sleep
-from typing import Type
+import pygame
 
 from src.RL.DroneAgent import DroneAgent
-import pygame
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject
-from src.utils.util_classes import InternalGPS, debug_print, change_map_scale, create_scaled_maps
+from src.utils.util_classes import debug_print, create_scaled_maps
 
 
 class PygameHandler:
@@ -157,7 +155,7 @@ class PygameHandler:
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
             x = self.drones[self.chosen_drone_index].last_location.x*self.zoom_factor - MapConsts.SCREEN_WIDTH / 2
-            y = self.drones[self.chosen_drone_index].last_location.y*self.zoom_factor  - MapConsts.SCREEN_HEIGHT / 2
+            y = self.drones[self.chosen_drone_index].last_location.y*self.zoom_factor - MapConsts.SCREEN_HEIGHT / 2
             if x < 0:
                 x = 0
             elif x > self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH:
@@ -177,10 +175,10 @@ class PygameHandler:
                       f"position x: {int(self.drones[self.chosen_drone_index].last_location.x)}" + \
                       f" y: {int(self.drones[self.chosen_drone_index].last_location.y)}" + \
                       f" z: {int(self.drones[self.chosen_drone_index].last_location.z)}\n" + \
-                      f" speed x : {int(self.drones[self.chosen_drone_index].get_velocity().x)}" + \
-                      f" y : {int(self.drones[self.chosen_drone_index].get_velocity().y)}" + \
-                      f" z : {int(self.drones[self.chosen_drone_index].get_velocity().z)}\n" + \
-                      f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}\n" + \
+                      f" speed x : {int(self.drones[self.chosen_drone_index].last_velocity.x)}" + \
+                      f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" + \
+                      f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}\n" + \
+                      f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}\n" + \
                       f" drones : {len(self.drones)}"
         # Split the text into lines
         lines = status_text.split('\n')
@@ -225,13 +223,14 @@ class PygameHandler:
     def draw_drones(self):
         for idx in range(len(self.drones)):
             drone = self.drones[idx]
-            drone.update()
-            drone.get_location()
-            drone.get_velocity()
-            self.drones[idx] = drone
-            drone.check_in_viewport(self.viewport_x, self.viewport_y,self.zoom_factor)
-            drone.adjust_drone_color(drone.last_location.z)
-            drone.draw(self.viewport_surface, self.viewport_x, self.viewport_y,self.zoom_factor)
+            drone.check_in_viewport(self.viewport_x, self.viewport_y, self.zoom_factor)
+            if drone.in_viewport:
+                drone.adjust_drone_color(drone.last_location.z)
+                pygame.draw.circle(surface=self.viewport_surface, color=(drone.color.r, drone.color.g, drone.color.b),
+                                   radius=Consts.SmallDroneSize,
+                                   center=(drone.last_location.x * self.zoom_factor - self.viewport_x,
+                                           drone.last_location.y * self.zoom_factor - self.viewport_y))
+                drone.adjust_drone_color(drone.last_location.z)
 
         debug_print(
             f"drone{self.chosen_drone_index} "
@@ -241,7 +240,7 @@ class PygameHandler:
             f" speed x : {int(self.drones[self.chosen_drone_index].last_velocity.x)}" +
             f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
             f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
-            f" battery : {int(self.drones[self.chosen_drone_index].get_battery_status())}")
+            f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}")
 
     def add_drone(self):
         # todo: add drone in subprocess
