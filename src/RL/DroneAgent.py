@@ -14,12 +14,16 @@ class DroneAgent:
         self.connect_to_server()
 
     def connect_to_server(self):
-        self._socket_to_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket_to_server.connect((Consts.HOST, Consts.PORT))
-        process = multiprocessing.Process(target=self.communicate_with_server)
+        try:
+            self._socket_to_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._socket_to_server.connect((Consts.HOST, Consts.PORT))
+            process = multiprocessing.Process(target=self.communicate_with_server)
 
-        # Start the process
-        process.start()
+            # Start the process
+            process.start()
+        except Exception as e:
+            print(e)
+
 
     def communicate_with_server(self):
 

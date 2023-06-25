@@ -10,26 +10,28 @@ class Environment:
     def __init__(self):
         self.drones_server = DroneServer()
         self.drones_server.start_server()
-        self.update_drones(self.drones_server.clients)
+        self.update_drones(self.drones_server.clients,self.drones_server.clients_lock)
         self.pygame_handler = PygameHandler(self.drones_server.clients)
 
     @staticmethod
-    def update_drones_data(clients):
+    def update_drones_data(clients,clients_lock):
         while True:
-            sleep(1)
-            try:
-                for idx in range(len(clients)):
-                    drone = clients[idx]
-                    drone.update()
-                    drone.get_location()
-                    drone.get_velocity()
-                    clients[idx] = drone
-            except Exception as e:
-                print(e)
+            with clients_lock:
+                try:
+                    for idx in range(len(clients)):
+                        sleep(1)
+                        drone = clients[idx]
+                        drone.update()
+                        drone.get_location()
+                        drone.get_velocity()
+                        clients[idx] = drone
+                except Exception as e:
+                    print(e)
+
 
     @staticmethod
-    def update_drones(clients):
-        s = multiprocessing.Process(target=Environment.update_drones_data, args=(clients,))
+    def update_drones(clients,clients_lock):
+        s = multiprocessing.Process(target=Environment.update_drones_data, args=(clients,clients_lock,))
         s.start()
 
 

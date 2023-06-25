@@ -8,20 +8,22 @@ class DroneServer:
     def __init__(self):
         manager = multiprocessing.Manager()
         self.clients = manager.list()
+        self.clients_lock = manager.Lock()
 
     # Server process
     @staticmethod
-    def server_process(clients):
+    def server_process(clients,clients_lock):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((Consts.HOST, Consts.PORT))
             print("Server started")
             s.listen()
             while True:
                 conn, addr = s.accept()
-                clients.append(EnvDroneObj(conn))
-                print('drones server :Connected by', addr)
+                with clients_lock:
+                    clients.append(EnvDroneObj(conn))
+                    print('drones server :Connected by', addr)
 
     def start_server(self):
-        s = multiprocessing.Process(target=self.server_process, args=(self.clients,))
+        s = multiprocessing.Process(target=self.server_process, args=(self.clients,self.clients_lock,))
         s.start()
 
