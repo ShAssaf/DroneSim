@@ -8,7 +8,7 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9592
+    PORT = 9595
 
 
 DEBUG = True  # Set this flag to True to enable debug mode
