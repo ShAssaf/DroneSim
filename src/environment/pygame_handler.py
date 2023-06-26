@@ -223,6 +223,10 @@ class PygameHandler:
     def draw_drones(self):
         for idx in range(len(self.drones)):
             drone = self.drones[idx]
+            drone.update()
+            drone.get_location()
+            drone.get_velocity()
+            self.drones[idx] = drone
             drone.check_in_viewport(self.viewport_x, self.viewport_y, self.zoom_factor)
             if drone.in_viewport:
                 drone.adjust_drone_color(drone.last_location.z)

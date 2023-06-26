@@ -25,16 +25,9 @@ class EnvDroneObj:
             else:
                 self.color = ThreeDVector(255, height, 0)
 
-    def draw(self, screen, viewport_x, viewport_y, zoom_factor):
-        if self.in_viewport:
-            pygame.draw.circle(surface=screen, color=(self.color.r, self.color.g, self.color.b),
-                               radius=Consts.SmallDroneSize,
-                               center=(self.last_location.x * zoom_factor - viewport_x,
-                                       self.last_location.y * zoom_factor - viewport_y))
-
     def check_in_viewport(self, viewport_x, viewport_y, zoom_factor):
-        if viewport_x < self.last_location.x*zoom_factor < viewport_x + MapConsts. SCREEN_WIDTH \
-                and viewport_y < self.last_location.y*zoom_factor < viewport_y + MapConsts.SCREEN_HEIGHT:
+        if viewport_x < self.last_location.x * zoom_factor < viewport_x + MapConsts.SCREEN_WIDTH \
+                and viewport_y < self.last_location.y * zoom_factor < viewport_y + MapConsts.SCREEN_HEIGHT:
             self.in_viewport = True
         else:
             self.in_viewport = False
