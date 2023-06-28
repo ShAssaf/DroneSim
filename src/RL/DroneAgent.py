@@ -1,3 +1,4 @@
+import math
 import pickle
 import socket
 import threading
@@ -38,7 +39,7 @@ class DroneAgent:
         target_angle = target_vector.get_angle()
         target_magnitude = target_vector.get_magnitude()
         relative_angle = target_angle - velocity_angle
-        battery_level = 100 #self.drone.power_controller.get_battery_level()
+        battery_level = 100  # self.drone.power_controller.get_battery_level()
         return np.concatenate((radar_data, [velocity_magnitude, target_magnitude, relative_angle, battery_level]))
 
     def step(self, action):
@@ -83,20 +84,22 @@ class DroneAgent:
             self.target = ThreeDVector(target[X], target[Y], 0)
             state = self.get_state()
 
-
             # Time steps within each episode
-            for time in range(100):
+            for s in range(150 + int(math.log10(e + 1))):
                 # Agent takes action
                 action = agent.select_action(state)
                 self.step(action)
                 reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity())
                 next_state = self.get_state()
-                rewards.append(reward)
+                # rewards.append(reward)
                 # Remember the experience
                 agent.store_experience(state, action, reward, next_state)
 
                 # make next_state the new current state.
                 state = next_state
+
+                if s > 150:
+                    agent.modify_learning_rate()
 
                 # Training
                 # Perform training if there are enough experiences in the replay memory
@@ -105,9 +108,7 @@ class DroneAgent:
                 # If episode ends (e.g., if the drone has arrived at the target or crashed)
                 if done:
                     break
-            print(
-                "episode: {}/{}, step: {},cumulative rewards{} e: {:.2}".format(e, episodes, time, sum(rewards),
-                                                                                agent.epsilon))
+            print(f"episode: {e}, step: {s}, reward {reward}")
 
             # Save weights every 50 episodes
             if e % 50 == 0:
@@ -164,3 +165,5 @@ class DroneAgent:
                         self._socket_to_server.sendall(serialized_data)
                     elif command != "":
                         print("Unknown command: " + command)
+
+

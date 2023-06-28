@@ -85,6 +85,11 @@ class DQNAgent:
         loss.backward()
         self.optimizer.step()
 
+    def modify_learning_rate(self):
+        if self.learning_rate > 0.001:
+            self.learning_rate *= 0.999
+            self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
+
     def load(self, name):
         try:
             self.q_network.load_state_dict(torch.load(name))
