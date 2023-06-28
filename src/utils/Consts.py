@@ -2,13 +2,20 @@ import random
 
 
 class Consts:
+    CLOSE_RANGE = 20
+    MEDIUM_RANGE = 100
+    FAR_RANGE = 500
+    DISTANCE_TO_TARGET = 5
+    DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
+    DT = 1
+    REAL_TIME = False
     BigDroneSize = 10
-    SmallDroneSize = 10
+    SmallDroneSize = 20
     MAP_IMG_PATH = None
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9602
+    PORT = 8889
 
 
 DEBUG = False  # Set this flag to True to enable debug mode
@@ -31,6 +38,10 @@ class Paths:
 class BatterySpec:
     VOLTAGE = 3.7
     CAPACITY = 3000  # in mAh
+
+
+class RadarSpec:
+    RANGE = 500  # in meters
 
 
 class SmallDroneDefaults:

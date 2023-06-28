@@ -1,3 +1,6 @@
+import multiprocessing
+from time import sleep
+
 import pygame
 
 from src.RL.DroneAgent import DroneAgent
@@ -9,7 +12,7 @@ from src.utils.util_classes import debug_print, create_scaled_maps
 class PygameHandler:
     def __init__(self, drones_list):
         self.drones = drones_list
-        self.add_drone()
+        self.add_drone(len(self.drones))
         pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
@@ -55,7 +58,7 @@ class PygameHandler:
             elif event.type == pygame.KEYDOWN:
                 self.change_modes(event)
                 if event.key == pygame.K_a:
-                    self.add_drone()
+                    self.add_drone(len(self.drones))
                 if self.mode == EnvironmentConsts.MAP_CONTROL:
                     self.handle_map_control(event)
                 elif self.mode == EnvironmentConsts.CHOOSE_DRONE:
@@ -179,6 +182,8 @@ class PygameHandler:
                       f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" + \
                       f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}\n" + \
                       f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}\n" + \
+                      f" target vector x :{int(self.drones[self.chosen_drone_index].get_target_vector()[0])}" + \
+                      f" y :{int(self.drones[self.chosen_drone_index].get_target_vector()[1])}\n" + \
                       f" drones : {len(self.drones)}"
         # Split the text into lines
         lines = status_text.split('\n')
@@ -223,7 +228,8 @@ class PygameHandler:
     def draw_drones(self):
         for idx in range(len(self.drones)):
             drone = self.drones[idx]
-            drone.update()
+            if not drone.is_learning:
+                drone.update()
             drone.get_location()
             drone.get_velocity()
             self.drones[idx] = drone
@@ -245,7 +251,8 @@ class PygameHandler:
             f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
             f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
             f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}")
-
-    def add_drone(self):
+    @staticmethod
+    def add_drone(len_drones):
         # todo: add drone in subprocess
-        DroneAgent(name=f"drone{len(self.drones)}")
+        DroneAgent(name=f"drone{len_drones}")
+

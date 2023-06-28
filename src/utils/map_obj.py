@@ -12,7 +12,7 @@ from src.utils.Consts import Paths, MapConsts
 class MapObject:
     def __init__(self, path=MapConsts.MAP_PATH):
         self.path = path
-        self.image = cv2.imread(self.path)
+        self.image = cv2.imread(self.path, cv2.IMREAD_GRAYSCALE)
         self.bounds = self.get_map_bounds()
         self.MAP_WIDTH = self.image.shape[0]
         self.MAP_HEIGHT = self.image.shape[1]

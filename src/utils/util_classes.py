@@ -1,8 +1,9 @@
+import math
 import time
 from typing import Optional
 from PIL import Image
 
-from src.utils.Consts import DEBUG, Paths, MapConsts
+from src.utils.Consts import DEBUG, Paths, MapConsts, Consts
 
 
 class ThreeDVector:
@@ -17,6 +18,15 @@ class ThreeDVector:
 
     def __setitem__(self, index, value):
         self.coordinates[index] = value
+
+    def __sub__(self, other):
+        if isinstance(other, ThreeDVector):
+            x_diff = self.x - other.x
+            y_diff = self.y - other.y
+            z_diff = self.z - other.z
+            return ThreeDVector(x_diff, y_diff, z_diff)
+        else:
+            raise TypeError("Unsupported operand type. The '-' operator is supported between instances of ThreeDVector.")
 
     @property
     def r(self):
@@ -44,6 +54,9 @@ class ThreeDVector:
 
     def get_magnitude(self):
         return (self.coordinates[0] ** 2 + self.coordinates[1] ** 2 + self.coordinates[2] ** 2) ** 0.5
+
+    def get_angle(self):
+        return math.degrees(math.atan2(self.y, self.x))
 
 
 class InternalGPS:
@@ -82,7 +95,10 @@ class InternalGPS:
         self.set_velz(velz)
 
     def calculate_position(self):
-        dt = time.time() - self.time
+        if Consts.REAL_TIME:
+            dt = time.time() - self.time
+        else:
+            dt = Consts.DT
         self.time = time.time()
         self.location.x += self.velocity.x * dt
         self.location.y += self.velocity.y * dt
@@ -113,7 +129,7 @@ def change_map_scale(scale_factor):
 
 
 def create_scaled_maps():
-    for i in [1,2, 4, 8]:
+    for i in [1, 2, 4, 8]:
         scale_factor = i
         # Open the image file
         img = Image.open(MapConsts.MAP_PATH)
@@ -129,4 +145,3 @@ def create_scaled_maps():
 
         # Save the scaled image to a file
         scaled_img.save(f'{Paths.TMP}/scaled_map_{i}.png')
-

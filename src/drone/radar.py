@@ -4,6 +4,7 @@ import pandas as pd
 from scipy.ndimage import rotate
 
 from data.radar_pre_calculated_data.generate_radar_raw_data import calculate_angle_matrix, calculate_distance_matrix
+from src.utils.Consts import RadarSpec, Consts
 
 
 # the radar use 1 pixel = 1 meter scale
@@ -14,19 +15,19 @@ class TwoDRadar:
 
     REGIONS = [('FORWARD', (-10, 10)), ('FORWARD_RIGHT', (10, 45)), ('FORWARD_LEFT', (-45, -10)), ('RIGHT', (45, 160)),
                ('LEFT', (-160, -45)), ('BACKWARD', (160, -160))]
-    SCOPES = [('Close', (0, 20)), ('Medium', (20, 100)), ('Far', (100, 500))]
+    SCOPES = [('Close', (0, Consts.CLOSE_RANGE)), ('Medium', (Consts.CLOSE_RANGE, Consts.MEDIUM_RANGE)),
+              ('Far', (Consts.MEDIUM_RANGE, Consts.FAR_RANGE))]
 
-    def __init__(self, r=5):
+    def __init__(self, r=RadarSpec.RANGE):
         self.distances = None
         self.angles = None
         self.indices_dict = {}
-        self.sensor_date_dict = {}
-        self.sensor_compact_date_dict = {}
+        self._sensor_date_dict = {}
+        self._sensor_compact_date_dict = {}
         self.R = r
-
         self._last_angle = -1
-
         self.pre_calculation()
+        self.update_sense_circle(np.zeros((2 * self.R, 2 * self.R)), 0)
 
     def calculate_relative_angles(self, direction_angle: int):
         """Calculate the rotation matrix for the drone velocity direction and update the indices_dict"""
@@ -60,9 +61,9 @@ class TwoDRadar:
         self.calculate_relative_angles(direction_angle)  # updates indices_dict with relative values
         for region in self.REGIONS:
             for scope in self.SCOPES:
-                self.sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
-                self.sensor_compact_date_dict[(region[0], scope[0])] = np.log2(np.sum(
-                    input_map[self.indices_dict[(region[0], scope[0])]] != 0) + 1).astype(int)
+                self._sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
+                self._sensor_compact_date_dict[(region[0], scope[0])] = np.log2(np.sum(
+                    input_map[self.indices_dict[(region[0], scope[0])]] != 0) + 1).astype(float)
 
     def pre_calculation(self):
         """Calculate the distance and angle matrix indices for each region and range"""
@@ -74,7 +75,22 @@ class TwoDRadar:
                                      skiprows=1).to_numpy()
         self.calculate_relative_angles(0)
 
+    def get_sensor_data(self, compact=False, as_vector=False):
+        """Return the sensor data as a dictionary of regions and ranges or as a vector"""
+        if as_vector:
+            if compact:
+                return self.as_vector(self._sensor_compact_date_dict)
+            else:
+                return self.as_vector(self._sensor_date_dict)
+        if compact:
+            return self._sensor_compact_date_dict
+        else:
+            return self._sensor_date_dict
 
+    @staticmethod
+    def as_vector(sensor_data):
+        """Convert sensor data to vector"""
+        return np.concatenate([sensor_data[key].flatten() for key in sensor_data.keys()])
 
 # image = cv2.imread('/Users/shlomo/Documents/DroneSim/t.jpg', cv2.IMREAD_GRAYSCALE)
 # a = TwoDRadar()
