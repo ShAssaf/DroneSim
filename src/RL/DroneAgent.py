@@ -29,6 +29,7 @@ class DroneAgent:
         self.source_target_df = pd.read_csv(Consts.DRONE_POSITIONS_PATH)
         self.initial_position = initial_position
         self.connect_to_server()
+        self.out_of_map = False
 
     def get_state(self):
         # todo: add battary level
@@ -60,7 +61,7 @@ class DroneAgent:
         except:
             self.drone.radar.update_sense_circle(np.ones((2 * RadarSpec.RANGE, 2 * RadarSpec.RANGE)),
                                                  self.drone.gps.get_velocity().get_angle())
-            debug_print(f"drone out of bounds. x:{self.drone.get_gps().x}, y:{self.drone.get_gps().y}")
+            self.out_of_map = True
 
     def learn(self):
 
@@ -72,26 +73,30 @@ class DroneAgent:
         # Set parameters
         episodes = 1000  # number of games we want the agent to play
         batch_size = 32
-        rewards = []
+
         # Iterate over episodes
-        for e in range(episodes):
-            # Reset state at the start of each game
-            done = False
+        e = 0
+        while True:
+            self.out_of_map = False
+            e+=1
             # reset drone position and drone target
             source, target = self.env.get_source_target()
             self.drone.set_gps(source[X], source[Y], 0)
             self.drone.gps.set_speed(0, 0, 0)
             self.target = ThreeDVector(target[X], target[Y], 0)
             state = self.get_state()
+            rewards = []
 
             # Time steps within each episode
-            for s in range(150 + int(math.log10(e + 1))):
+            for s in range(500000):
                 # Agent takes action
                 action = agent.select_action(state)
                 self.step(action)
+                if self.out_of_map:
+                    break
                 reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity())
                 next_state = self.get_state()
-                # rewards.append(reward)
+                rewards.append(reward)
                 # Remember the experience
                 agent.store_experience(state, action, reward, next_state)
 
@@ -108,7 +113,7 @@ class DroneAgent:
                 # If episode ends (e.g., if the drone has arrived at the target or crashed)
                 if done:
                     break
-            print(f"episode: {e}, step: {s}, reward {reward}")
+            print(f"episode: {e}, step: {s}, reward {sum(rewards)}")
 
             # Save weights every 50 episodes
             if e % 50 == 0:

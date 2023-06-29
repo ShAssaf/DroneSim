@@ -64,6 +64,7 @@ class TwoDRadar:
                 self._sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
                 self._sensor_compact_date_dict[(region[0], scope[0])] = np.log2(np.sum(
                     input_map[self.indices_dict[(region[0], scope[0])]] != 0) + 1).astype(float)
+        pass
 
     def pre_calculation(self):
         """Calculate the distance and angle matrix indices for each region and range"""
