@@ -4,11 +4,12 @@ from time import sleep
 import pygame
 
 from src.RL.DroneAgent import DroneAgent
+from src.RL.drone_agnet2 import DroneAgent2
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject
 from src.utils.util_classes import debug_print, create_scaled_maps
 
-
+imitate = False
 class PygameHandler:
     def __init__(self, drones_list):
         self.drones = drones_list
@@ -141,18 +142,36 @@ class PygameHandler:
             self.viewport_y = self.map_object.MAP_HEIGHT - MapConsts.SCREEN_HEIGHT
 
     def handle_drones_control(self, event):
-        if event.key == pygame.K_UP:
-            self.drones[self.chosen_drone_index].accelerate(0, -1, 0)
-        if event.key == pygame.K_DOWN:
-            self.drones[self.chosen_drone_index].accelerate(0, 1, 0)
-        if event.key == pygame.K_LEFT:
-            self.drones[self.chosen_drone_index].accelerate(-1, 0, 0)
-        if event.key == pygame.K_RIGHT:
-            self.drones[self.chosen_drone_index].accelerate(1, 0, 0)
-        if event.key == pygame.K_z:
-            self.drones[self.chosen_drone_index].accelerate(0, 0, 1)
-        if event.key == pygame.K_x:
-            self.drones[self.chosen_drone_index].accelerate(0, 0, -1)
+        if imitate:
+            if event.key == pygame.K_UP:
+                self.drones[self.chosen_drone_index].set_imitate(3)
+            if event.key == pygame.K_DOWN:
+                self.drones[self.chosen_drone_index].set_imitate(2)
+            if event.key == pygame.K_LEFT:
+                self.drones[self.chosen_drone_index].set_imitate(1)
+            if event.key == pygame.K_RIGHT:
+                self.drones[self.chosen_drone_index].set_imitate(0)
+        else:
+            if event.key == pygame.K_UP:
+                self.drones[self.chosen_drone_index].accelerate(0, -1, 0)
+            if event.key == pygame.K_DOWN:
+                self.drones[self.chosen_drone_index].accelerate(0, 1, 0)
+            if event.key == pygame.K_LEFT:
+                self.drones[self.chosen_drone_index].accelerate(-1, 0, 0)
+            if event.key == pygame.K_RIGHT:
+                self.drones[self.chosen_drone_index].accelerate(1, 0, 0)
+            if event.key == pygame.K_z:
+                self.drones[self.chosen_drone_index].accelerate(0, 0, 1)
+            if event.key == pygame.K_x:
+                self.drones[self.chosen_drone_index].accelerate(0, 0, -1)
+            if event.key == pygame.K_KP8:
+                self.drones[self.chosen_drone_index].accelerate2(0)
+            if event.key == pygame.K_KP2:
+                self.drones[self.chosen_drone_index].accelerate2(1)
+            if event.key == pygame.K_KP4:
+                self.drones[self.chosen_drone_index].turn_to(1)
+            if event.key == pygame.K_KP6:
+                self.drones[self.chosen_drone_index].turn_to(0)
 
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
@@ -254,5 +273,5 @@ class PygameHandler:
     @staticmethod
     def add_drone(len_drones):
         # todo: add drone in subprocess
-        DroneAgent(name=f"drone{len_drones}")
+        DroneAgent2(name=f"drone{len_drones}")
 

@@ -84,3 +84,12 @@ class EnvDroneObj:
         deserialized_data = pickle.loads(received_data)
         self.target_location = deserialized_data
         return deserialized_data
+
+    def set_imitate(self, action):
+        self._socket.sendall(f"set_imitate:{action};".encode())
+
+    def accelerate2(self, direction=0):
+        self._socket.sendall(f"accelerate2:{direction};".encode())
+
+    def turn_to(self, direction=0):
+        self._socket.sendall(f"turn_to:{direction};".encode())

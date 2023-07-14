@@ -26,26 +26,27 @@ class FakeEnv:
                int(pos.y + RadarSpec.RANGE - Consts.CLOSE_RANGE):int(pos.y + RadarSpec.RANGE + Consts.CLOSE_RANGE),
                int(pos.x + RadarSpec.RANGE - Consts.CLOSE_RANGE): int(pos.x + RadarSpec.RANGE + Consts.CLOSE_RANGE)]
 
-    def get_reward(self, pos: ThreeDVector, target: ThreeDVector, velocity: ThreeDVector):
+    def get_reward(self, pos: ThreeDVector, target: ThreeDVector, velocity: ThreeDVector, battery_level: float):
         """get reward for current position and done flag"""
-        # todo: add battary level
-        if pos.x < 0 - RadarSpec.RANGE or pos.y < 0 - RadarSpec.RANGE or pos.x > self.map.image.shape[0] or pos.y > \
-                self.map.image.shape[1]:
-            return -(pos - target).get_magnitude(), False
-        # done on exits screen
-        # if pos.x < 0 or pos.y < 0 or pos.x > self.map.image.shape[0]-RadarSpec.RANGE*2 or pos.y >
-        # self.map.image.shape[1]-RadarSpec.RANGE*2:
-        #     return -100000, True
-        elif not np.all(self.get_close_env(pos) == 0):
+        # todo: add battery level
+        velocity_angle = velocity.get_angle()
+        velocity_magnitude = velocity.get_magnitude()
+        target_vector = target - pos
+        target_angle = target_vector.get_angle()
+        target_magnitude = target_vector.get_magnitude()
+        relative_angle = target_angle - velocity_angle
+
+        if not np.all(self.get_close_env(pos) == 0):
             print("drone hit obstacle")
-            sleep(0.2)
-            return -100000, True
-        if (pos - target).get_magnitude() < Consts.DISTANCE_TO_TARGET:
-            if velocity.get_magnitude() < 1:
-                (10 - velocity.get_magnitude()) * 100, True
-            return (10 - velocity.get_magnitude()) * 1000000, False
+            return -10000000, False
+        if target_magnitude < Consts.DISTANCE_TO_TARGET:
+            if velocity_magnitude < 1:
+                return 10000000000, True
+            return (10 - velocity_magnitude) * 1000, False
         else:
-            return -(pos - target).get_magnitude(), False
+            if velocity_magnitude < 1:
+                return -1000000, False
+            return (90-abs(relative_angle)*100)*velocity_magnitude, False
 
     @staticmethod
     def get_source_target() -> ((int, int), (int, int)):

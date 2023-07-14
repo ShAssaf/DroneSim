@@ -32,7 +32,7 @@ class Drone:
     def get_velocity(self):
         return self.gps.get_velocity()
 
-    def set_speed(self, vel_x, vel_y, vel_z):
+    def set_velocity(self, vel_x, vel_y, vel_z):
         self.gps.set_speed(min(vel_x, self.max_speed), min(vel_y, self.max_speed), min(vel_z, self.max_speed))
 
     def get_name(self):

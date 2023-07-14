@@ -37,7 +37,7 @@ class QNetwork(nn.Module):
 
 # Define the DQN agent
 class DQNAgent:
-    def __init__(self, state_size, action_size, learning_rate=0.001, discount_factor=0.95, epsilon=0.1):
+    def __init__(self, state_size, action_size, learning_rate=0.01, discount_factor=0.95, epsilon=0.9):
         self.state_size = state_size
         self.action_size = action_size
         self.learning_rate = learning_rate

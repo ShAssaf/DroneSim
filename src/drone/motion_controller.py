@@ -1,4 +1,7 @@
+import math
+
 from src.utils.util_classes import ThreeDVector, debug_print
+
 
 class MotionControl:
     def __init__(self, vehicle):
@@ -7,10 +10,39 @@ class MotionControl:
         self.max_total_speed = vehicle.max_speed
 
     def accelerate(self, x, y, z):
-        if ThreeDVector(self.vehicle.get_velocity().x + x, self.vehicle.get_velocity().y + y, self.vehicle.get_velocity().z + z)\
+        if ThreeDVector(self.vehicle.get_velocity().x + x, self.vehicle.get_velocity().y + y,
+                        self.vehicle.get_velocity().z + z) \
                 .get_magnitude() < self.max_total_speed and abs(
             self.vehicle.get_velocity().z + z) < self.max_vertical_speed:
-            self.vehicle.set_speed(self.vehicle.get_velocity().x + x, self.vehicle.get_velocity().y + y,
-                                   self.vehicle.get_velocity().z + z)
+            vel = self.vehicle.get_velocity()
+            self.vehicle.set_velocity(vel.x + x, vel.y + y, vel.z + z)
         else:
             debug_print("Drone reached max speed")
+
+    def turn_to(self, direction=0):
+        velocity = self.vehicle.get_velocity()
+        vel_mag = velocity.get_magnitude()
+        angel = velocity.get_angle()
+        if direction == 0:
+            angel += 36
+            if angel > 180:
+                angel -= 360
+        else:
+            angel -= 36
+            if angel < -180:
+                angel += 360
+        self.vehicle.set_velocity(vel_mag * math.sin(math.radians(angel)), vel_mag * -math.cos(math.radians(angel)),
+                                  velocity.z)
+
+    def accelerate2(self, direction=0):
+        velocity = self.vehicle.get_velocity()
+        vel_mag = velocity.get_magnitude()
+        angel = velocity.get_angle()
+        if direction == 0:
+            if vel_mag < self.max_total_speed:
+                vel_mag += 1
+        else:
+            if vel_mag >= 1:
+                vel_mag -= 1
+        self.vehicle.set_velocity(vel_mag * math.sin(math.radians(angel)), vel_mag * -math.cos(math.radians(angel)),
+                                  velocity.z)

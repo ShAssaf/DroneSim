@@ -2,6 +2,7 @@ import math
 import pickle
 import socket
 import threading
+import random
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ from src.utils.util_classes import InternalGPS, ThreeDVector, debug_print
 
 X = 0
 Y = 1
-
+imitate = False
 
 class DroneAgent:
     """this is reinforcement learning agent that will be used to control the drone"""
@@ -30,33 +31,37 @@ class DroneAgent:
         self.initial_position = initial_position
         self.connect_to_server()
         self.out_of_map = False
+        self.immitate_flag = False
+        self.immitate_value = 0
 
     def get_state(self):
         # todo: add battary level
         radar_data = self.drone.radar.get_sensor_data(compact=True, as_vector=True)
-        velocity_angle = self.drone.get_velocity().get_angle()
+        # velocity_angle = self.drone.get_velocity().get_angle()
         velocity_magnitude = self.drone.get_velocity().get_magnitude()
         target_vector = self.target - self.drone.get_gps()
         target_angle = target_vector.get_angle()
         target_magnitude = target_vector.get_magnitude()
-        relative_angle = target_angle - velocity_angle
+        # relative_angle = target_angle - velocity_angle
         battery_level = 100  # self.drone.power_controller.get_battery_level()
-        return np.concatenate((radar_data, [velocity_magnitude, target_magnitude, relative_angle, battery_level]))
+        return np.concatenate(
+            (radar_data,
+             [velocity_magnitude / 10, target_magnitude / 1000, target_angle / 180, battery_level / 100]))  # normalize
 
     def step(self, action):
         if action == 0:
-            self.drone.motion_controller.accelerate(1, 0, 0)
+            self.drone.motion_controller.accelerate2(0)
         elif action == 1:
-            self.drone.motion_controller.accelerate(-1, 0, 0)
+            self.drone.motion_controller.accelerate2(1)
         elif action == 2:
-            self.drone.motion_controller.accelerate(0, 1, 0)
+            self.drone.motion_controller.turn_to(0)
         elif action == 3:
-            self.drone.motion_controller.accelerate(0, -1, 0)
+            self.drone.motion_controller.turn_to(1)
         elif action == 4:
             pass
         self.drone.gps.calculate_position()
         try:
-            self.drone.radar.update_sense_circle(self.env.get_env(self.drone.get_gps()),
+            self.drone.radar.update_sense_circle(self.env.get_env(self.drone.gps.get_gps()),
                                                  self.drone.gps.get_velocity().get_angle())
         except:
             self.drone.radar.update_sense_circle(np.ones((2 * RadarSpec.RANGE, 2 * RadarSpec.RANGE)),
@@ -78,7 +83,10 @@ class DroneAgent:
         e = 0
         while True:
             self.out_of_map = False
-            e+=1
+            if e < 5000:
+                agent.learning_rate = 0.01
+                agent.epsilon = 0.6 - int(e / 10000)
+            e += 1
             # reset drone position and drone target
             source, target = self.env.get_source_target()
             self.drone.set_gps(source[X], source[Y], 0)
@@ -91,10 +99,16 @@ class DroneAgent:
             for s in range(500000):
                 # Agent takes action
                 action = agent.select_action(state)
+                if imitate:
+                    while not self.immitate_flag:
+                        pass
+                    action = self.immitate_value
+                    self.immitate_flag = False
                 self.step(action)
                 if self.out_of_map:
                     break
-                reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity())
+                reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity(),
+                                                   self.drone.power_controller.get_battery_percentage())
                 next_state = self.get_state()
                 rewards.append(reward)
                 # Remember the experience
@@ -103,8 +117,7 @@ class DroneAgent:
                 # make next_state the new current state.
                 state = next_state
 
-                if s > 150:
-                    agent.modify_learning_rate()
+                agent.modify_learning_rate()
 
                 # Training
                 # Perform training if there are enough experiences in the replay memory
@@ -155,10 +168,13 @@ class DroneAgent:
                     elif command == "get_drone_name":
                         serialized_data = pickle.dumps(self.drone.name)
                         self._socket_to_server.sendall(serialized_data)
+                    elif command.startswith("accelerate2"):
+                        self.drone.motion_controller.accelerate2(float(command.split(":")[1]))
+                    elif command.startswith("turn_to"):
+                        self.drone.motion_controller.turn_to(float(command.split(":")[1]))
                     elif command.startswith("accelerate"):
                         accelerate_vec = [float(i) for i in command.split(":")[1].split(",")]
-                        self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1],
-                                                                accelerate_vec[2])
+                        self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1],accelerate_vec[2])
                     elif command == "update":
                         self.drone.calculate_gps()
                         self.drone.power_controller.calculate_battery(self.drone.get_velocity())
@@ -168,7 +184,9 @@ class DroneAgent:
                     elif command == "get_target_vector":
                         serialized_data = pickle.dumps(self.target - self.drone.get_gps())
                         self._socket_to_server.sendall(serialized_data)
+                    elif command.startswith("set_imitate"):
+                        self.immitate_value = int(command.split(":")[1])
+                        self.immitate_flag = True
                     elif command != "":
                         print("Unknown command: " + command)
-
 

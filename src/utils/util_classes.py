@@ -53,10 +53,16 @@ class ThreeDVector:
         self.coordinates[2] = value
 
     def get_magnitude(self):
+        self.coordinates = [self.x, self.y, self.z]
         return (self.coordinates[0] ** 2 + self.coordinates[1] ** 2 + self.coordinates[2] ** 2) ** 0.5
 
     def get_angle(self):
-        return math.degrees(math.atan2(self.y, self.x))
+        d = math.degrees(math.atan2(self.y, self.x)) +90 # -self.y because the y axis is inverted
+        if d < -180:
+            d += 360
+        if d > 180:
+            d -= 360
+        return d
 
 
 class InternalGPS:

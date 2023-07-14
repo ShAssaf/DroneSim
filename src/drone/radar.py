@@ -31,8 +31,8 @@ class TwoDRadar:
 
     def calculate_relative_angles(self, direction_angle: int):
         """Calculate the rotation matrix for the drone velocity direction and update the indices_dict"""
-        if direction_angle == self._last_angle:
-            return
+        # if direction_angle == self._last_angle:
+        #     return
         if direction_angle < 0:
             direction_angle = 360 + direction_angle
         angles = self.angles - direction_angle
@@ -62,8 +62,8 @@ class TwoDRadar:
         for region in self.REGIONS:
             for scope in self.SCOPES:
                 self._sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
-                self._sensor_compact_date_dict[(region[0], scope[0])] = np.log2(np.sum(
-                    input_map[self.indices_dict[(region[0], scope[0])]] != 0) + 1).astype(float)
+                self._sensor_compact_date_dict[(region[0], scope[0])] = np.count_nonzero(
+                    self._sensor_date_dict[(region[0], scope[0])])/self._sensor_date_dict[(region[0], scope[0])].size
         pass
 
     def pre_calculation(self):
@@ -91,8 +91,10 @@ class TwoDRadar:
     @staticmethod
     def as_vector(sensor_data):
         """Convert sensor data to vector"""
-        return np.concatenate([sensor_data[key].flatten() for key in sensor_data.keys()])
-
+        try:
+            return np.concatenate([sensor_data[key].flatten() for key in sensor_data.keys()])
+        except :
+            return np.array([sensor_data[key] for key in sensor_data.keys()])
 # image = cv2.imread('/Users/shlomo/Documents/DroneSim/t.jpg', cv2.IMREAD_GRAYSCALE)
 # a = TwoDRadar()
 # a.update_sense_circle(image)
