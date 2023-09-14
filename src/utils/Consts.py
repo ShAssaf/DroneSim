@@ -15,7 +15,7 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 8888
+    PORT = 9990
 
 
 DEBUG = False  # Set this flag to True to enable debug mode
@@ -55,7 +55,7 @@ class SmallDroneDefaults:
 class MapConsts:
     SCREEN_WIDTH = 500
     SCREEN_HEIGHT = 500
-    MAP_PATH = 'data/circles.png'
+    MAP_PATH = 'data/circles.jpg'
 
 
 class EnvironmentConsts:

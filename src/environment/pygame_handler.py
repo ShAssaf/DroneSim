@@ -3,8 +3,7 @@ from time import sleep
 
 import pygame
 
-from src.RL.DroneAgent import DroneAgent
-from src.RL.drone_agnet2 import DroneAgent2
+from src.RL.drone_agent_q_learning import DroneAgent
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject
 from src.utils.util_classes import debug_print, create_scaled_maps
@@ -20,7 +19,7 @@ class PygameHandler:
         self.fps = 120
         self.running = True
         self.map_object = MapObject(MapConsts.MAP_PATH)
-        create_scaled_maps()
+        #create_scaled_maps()
         self.window = pygame.display.set_mode((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
         self.map_surface = pygame.image.load(self.map_object.path)
         self.viewport_surface = pygame.Surface((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
@@ -273,5 +272,5 @@ class PygameHandler:
     @staticmethod
     def add_drone(len_drones):
         # todo: add drone in subprocess
-        DroneAgent2(name=f"drone{len_drones}")
+        DroneAgent(name=f"drone{len_drones}")
 

@@ -15,7 +15,8 @@ class FakeEnv:
         self.map = MapObject()
         # pad the map image with zeros for RadarSpec.RANGE
         self.map.image = np.pad(self.map.image,
-                                ((RadarSpec.RANGE, RadarSpec.RANGE), (RadarSpec.RANGE, RadarSpec.RANGE)))
+                                ((RadarSpec.RANGE, RadarSpec.RANGE), (RadarSpec.RANGE, RadarSpec.RANGE)),
+                                mode='constant', constant_values=255)
 
     def get_env(self, pos: ThreeDVector):
         return self.map.image[int(pos.y):int(pos.y + RadarSpec.RANGE * 2),
@@ -38,7 +39,7 @@ class FakeEnv:
 
         if not np.all(self.get_close_env(pos) == 0):
             print("drone hit obstacle")
-            return -10000000, False
+            return -10000000, True
         if target_magnitude < Consts.DISTANCE_TO_TARGET:
             if velocity_magnitude < 1:
                 return 10000000000, True

@@ -1,52 +1,45 @@
-import math
 import pickle
 import socket
 import threading
-import random
+from time import sleep
 
 import numpy as np
-import pandas as pd
-import torch
 
-from src.RL.dqn import DQNAgent
+from src.RL.doubleQ import QLearning
 from src.RL.fake_env import FakeEnv
 from src.drone.Drone import SmallDrone
-from src.utils.Consts import Consts, RadarSpec
-from src.utils.util_classes import InternalGPS, ThreeDVector, debug_print
+from src.utils.Consts import RadarSpec, Consts
+from src.utils.util_classes import ThreeDVector, InternalGPS
 
-X = 0
-Y = 1
-imitate = False
 
 class DroneAgent:
-    """this is reinforcement learning agent that will be used to control the drone"""
-
     def __init__(self, name: str, target: ThreeDVector = ThreeDVector(200, 200, 0),
                  initial_position: ThreeDVector = ThreeDVector(500, 500, 0)):
         self.drone = SmallDrone(name, InternalGPS(initial_position))
         self._socket_to_server = None
         self.env = FakeEnv()
         self.target = target
-        self.source_target_df = pd.read_csv(Consts.DRONE_POSITIONS_PATH)
+        self.QAgent = QLearning()
+        self.out_of_map = False
+
         self.initial_position = initial_position
         self.connect_to_server()
-        self.out_of_map = False
-        self.immitate_flag = False
-        self.immitate_value = 0
 
     def get_state(self):
         # todo: add battary level
         radar_data = self.drone.radar.get_sensor_data(compact=True, as_vector=True)
-        # velocity_angle = self.drone.get_velocity().get_angle()
+        velocity_angle = self.drone.get_velocity().get_angle()
         velocity_magnitude = self.drone.get_velocity().get_magnitude()
         target_vector = self.target - self.drone.get_gps()
         target_angle = target_vector.get_angle()
         target_magnitude = target_vector.get_magnitude()
-        # relative_angle = target_angle - velocity_angle
+        relative_angle = target_angle - velocity_angle
         battery_level = 100  # self.drone.power_controller.get_battery_level()
         return np.concatenate(
             (radar_data,
-             [velocity_magnitude / 10, target_magnitude / 1000, target_angle / 180, battery_level / 100]))  # normalize
+             [relative_angle / 180, velocity_magnitude / 10],
+             [target_angle / 180, target_magnitude / 1000],
+             [battery_level / 100]))  # normalize
 
     def step(self, action):
         if action == 0:
@@ -68,69 +61,54 @@ class DroneAgent:
                                                  self.drone.gps.get_velocity().get_angle())
             self.out_of_map = True
 
-    def learn(self):
+    def start(self):
 
-        # Initialize environment and the agent
-        state_size = 22  # 6 REGIONS * 3 SCOPES + VELOCITY_MAGNITUDE + TARGET_RANGE + RELATIVE ANGLE + BATTERY_LEVEL
-        action_size = 5  # acceleration in x, -x , y, -y, or do nothing direction currently ignore z direction
-        agent = DQNAgent(state_size, action_size)
+        sum_reward = []
+        e_reward = 0
+        episodes = 4000000
 
-        # Set parameters
-        episodes = 1000  # number of games we want the agent to play
-        batch_size = 32
-
-        # Iterate over episodes
-        e = 0
-        while True:
+        ### for Loop that train the model num_episodes times by playing the game
+        for e in range(episodes):
+            source, target = (np.random.randint(200, 700), np.random.randint(100, 400)), (
+                np.random.randint(200, 700), np.random.randint(100, 400))
+            self.drone.set_gps(source[0], source[1], 0)
             self.out_of_map = False
-            if e < 5000:
-                agent.learning_rate = 0.01
-                agent.epsilon = 0.6 - int(e / 10000)
-            e += 1
-            # reset drone position and drone target
-            source, target = self.env.get_source_target()
-            self.drone.set_gps(source[X], source[Y], 0)
             self.drone.gps.set_speed(0, 0, 0)
-            self.target = ThreeDVector(target[X], target[Y], 0)
+            self.target = ThreeDVector(target[0], target[1], 0)
             state = self.get_state()
-            rewards = []
+            e_reward = 0
+            # Play the game!
+            while True:
 
-            # Time steps within each episode
-            for s in range(500000):
-                # Agent takes action
-                action = agent.select_action(state)
-                if imitate:
-                    while not self.immitate_flag:
-                        pass
-                    action = self.immitate_value
-                    self.immitate_flag = False
+                # 4. Run agent on the state
+                action = self.QAgent.choose_action(state)
                 self.step(action)
-                if self.out_of_map:
-                    break
+
+                # 5. Agent performs action
+                next_state = self.get_state()
                 reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity(),
                                                    self.drone.power_controller.get_battery_percentage())
-                next_state = self.get_state()
-                rewards.append(reward)
-                # Remember the experience
-                agent.store_experience(state, action, reward, next_state)
 
-                # make next_state the new current state.
+
+                # 7. Learn
+                self.QAgent.update(state, action, reward, next_state)
+
+
+
+                # 9. Update state
                 state = next_state
 
-                agent.modify_learning_rate()
-
-                # Training
-                # Perform training if there are enough experiences in the replay memory
-                if len(agent.replay_buffer.buffer) >= batch_size:
-                    agent.train(batch_size)
-                # If episode ends (e.g., if the drone has arrived at the target or crashed)
-                if done:
+                e_reward += reward
+                # 10. Check if end of game
+                if done or self.out_of_map:
                     break
-            print(f"episode: {e}, step: {s}, reward {sum(rewards)}")
 
-            # Save weights every 50 episodes
-            if e % 50 == 0:
-                agent.save("dqn_weights.h5")
+            if e % 100 == 0:
+                self.QAgent.vector_ds.clean()
+                self.QAgent.vector_ds.save()
+            sum_reward.append(e_reward/1000)
+
+
 
     def connect_to_server(self):
         self._socket_to_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -152,15 +130,10 @@ class DroneAgent:
             else:
                 for command in data:
                     if command == "get_location":
-                        a = self.drone.get_gps()
-                        # Serialize the object
-                        serialized_data = pickle.dumps(a)
-                        # Send the serialized object
+                        serialized_data = pickle.dumps(self.drone.get_gps())
                         self._socket_to_server.sendall(serialized_data)
                     elif command == "get_velocity":
-                        # Serialize the object
                         serialized_data = pickle.dumps(self.drone.gps.get_velocity())
-                        # Send the serialized object
                         self._socket_to_server.sendall(serialized_data)
                     elif command == "get_battery_status":
                         serialized_data = pickle.dumps(self.drone.power_controller.get_battery_percentage())
@@ -174,19 +147,16 @@ class DroneAgent:
                         self.drone.motion_controller.turn_to(float(command.split(":")[1]))
                     elif command.startswith("accelerate"):
                         accelerate_vec = [float(i) for i in command.split(":")[1].split(",")]
-                        self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1],accelerate_vec[2])
+                        self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1], accelerate_vec[2])
                     elif command == "update":
                         self.drone.calculate_gps()
                         self.drone.power_controller.calculate_battery(self.drone.get_velocity())
                     elif command == "start_learning":
-                        t = threading.Thread(target=self.learn, args=())
+                        t = threading.Thread(target=self.start, args=())
                         t.start()
                     elif command == "get_target_vector":
                         serialized_data = pickle.dumps(self.target - self.drone.get_gps())
                         self._socket_to_server.sendall(serialized_data)
-                    elif command.startswith("set_imitate"):
-                        self.immitate_value = int(command.split(":")[1])
-                        self.immitate_flag = True
                     elif command != "":
                         print("Unknown command: " + command)
 

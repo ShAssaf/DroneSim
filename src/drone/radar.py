@@ -1,7 +1,9 @@
-import cv2
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.ndimage import rotate
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
 
 from data.radar_pre_calculated_data.generate_radar_raw_data import calculate_angle_matrix, calculate_distance_matrix
 from src.utils.Consts import RadarSpec, Consts
@@ -88,12 +90,36 @@ class TwoDRadar:
         else:
             return self._sensor_date_dict
 
+    def plot_radar(self):
+        fig, ax = plt.subplots()
+        SCOPES = [('Close', (0, 1)), ('Medium', (1, 2)), ('Far', (2, 3))]
+
+        norm = Normalize(vmin=0, vmax=1)
+        cmap = plt.get_cmap("viridis")
+        sm = ScalarMappable(norm=norm, cmap=cmap)
+
+        for region, (start_angle, end_angle) in TwoDRadar.REGIONS:
+            for scope, (inner_radius, outer_radius) in SCOPES:
+                value = self._sensor_compact_date_dict.get((region, scope), 0)
+                color = sm.to_rgba(value)
+
+                wedge = patches.Wedge(center=(0, 0), r=outer_radius, theta1=start_angle, theta2=end_angle,
+                                      width=outer_radius - inner_radius, color=color)
+                ax.add_patch(wedge)
+
+        ax.set_xlim([-3, 3])
+        ax.set_ylim([-3, 3])
+        ax.set_aspect("equal")
+
+        plt.colorbar(sm)
+        plt.show()
+
     @staticmethod
     def as_vector(sensor_data):
         """Convert sensor data to vector"""
         try:
             return np.concatenate([sensor_data[key].flatten() for key in sensor_data.keys()])
-        except :
+        except:
             return np.array([sensor_data[key] for key in sensor_data.keys()])
 # image = cv2.imread('/Users/shlomo/Documents/DroneSim/t.jpg', cv2.IMREAD_GRAYSCALE)
 # a = TwoDRadar()

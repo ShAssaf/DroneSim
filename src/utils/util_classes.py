@@ -151,3 +151,4 @@ def create_scaled_maps():
 
         # Save the scaled image to a file
         scaled_img.save(f'{Paths.TMP}/scaled_map_{i}.png')
+
