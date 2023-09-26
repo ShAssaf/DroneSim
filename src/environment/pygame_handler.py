@@ -1,5 +1,4 @@
-import multiprocessing
-from time import sleep
+import time
 
 import pygame
 
@@ -11,15 +10,15 @@ from src.utils.util_classes import debug_print, create_scaled_maps
 imitate = False
 class PygameHandler:
     def __init__(self, drones_list):
+        create_scaled_maps()
+        pygame.init()  #
         self.drones = drones_list
         self.add_drone(len(self.drones))
-        pygame.init()  #
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
         self.fps = 120
         self.running = True
         self.map_object = MapObject(MapConsts.MAP_PATH)
-        #create_scaled_maps()
         self.window = pygame.display.set_mode((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
         self.map_surface = pygame.image.load(self.map_object.path)
         self.viewport_surface = pygame.Surface((MapConsts.SCREEN_WIDTH, MapConsts.SCREEN_HEIGHT))
@@ -246,8 +245,8 @@ class PygameHandler:
     def draw_drones(self):
         for idx in range(len(self.drones)):
             drone = self.drones[idx]
-            if not drone.is_learning:
-                drone.update()
+            # if not drone.is_learning:
+            drone.update()
             drone.get_location()
             drone.get_velocity()
             self.drones[idx] = drone
@@ -273,4 +272,3 @@ class PygameHandler:
     def add_drone(len_drones):
         # todo: add drone in subprocess
         DroneAgent(name=f"drone{len_drones}")
-

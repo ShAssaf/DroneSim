@@ -18,7 +18,7 @@ class DroneAgent:
         self.drone = SmallDrone(name, InternalGPS(initial_position))
         self._socket_to_server = None
         self.env = FakeEnv()
-        self.target = target
+        self.target = self.drone.mission_controller.mission.target
         self.QAgent = QLearning()
         self.out_of_map = False
 
@@ -30,7 +30,7 @@ class DroneAgent:
         radar_data = self.drone.radar.get_sensor_data(compact=True, as_vector=True)
         velocity_angle = self.drone.get_velocity().get_angle()
         velocity_magnitude = self.drone.get_velocity().get_magnitude()
-        target_vector = self.target - self.drone.get_gps()
+        target_vector = self.target - self.drone.get_location()
         target_angle = target_vector.get_angle()
         target_magnitude = target_vector.get_magnitude()
         relative_angle = target_angle - velocity_angle
@@ -130,7 +130,7 @@ class DroneAgent:
             else:
                 for command in data:
                     if command == "get_location":
-                        serialized_data = pickle.dumps(self.drone.get_gps())
+                        serialized_data = pickle.dumps(self.drone.get_location())
                         self._socket_to_server.sendall(serialized_data)
                     elif command == "get_velocity":
                         serialized_data = pickle.dumps(self.drone.gps.get_velocity())
@@ -151,11 +151,11 @@ class DroneAgent:
                     elif command == "update":
                         self.drone.calculate_gps()
                         self.drone.power_controller.calculate_battery(self.drone.get_velocity())
-                    elif command == "start_learning":
-                        t = threading.Thread(target=self.start, args=())
-                        t.start()
+                    # elif command == "start_learning":
+                    #     t = threading.Thread(target=self.start, args=())
+                    #     t.start()
                     elif command == "get_target_vector":
-                        serialized_data = pickle.dumps(self.target - self.drone.get_gps())
+                        serialized_data = pickle.dumps(self.target - self.drone.get_location())
                         self._socket_to_server.sendall(serialized_data)
                     elif command != "":
                         print("Unknown command: " + command)

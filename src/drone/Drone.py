@@ -1,13 +1,11 @@
 from typing import Type
-import time
-from src.drone.power_management import BatteryController
+
+from src.drone.misson_control import STATUS, VehicleMissionControl
 from src.drone.motion_controller import MotionControl
+from src.drone.power_management import BatteryController
 from src.drone.radar import TwoDRadar
 from src.utils.Consts import Consts, SmallDroneDefaults, RadarSpec
-from src.utils.util_classes import InternalGPS, debug_print, ThreeDVector
-
-
-
+from src.utils.util_classes import InternalGPS, debug_print
 
 
 class Drone:
@@ -15,15 +13,17 @@ class Drone:
                  size=Consts.BigDroneSize):
         self.name = name
         self.gps = InternalGPS() if gps is None else gps
+        self.location = self.gps.get_gps()
         self.radar = TwoDRadar(r=RadarSpec.RANGE)
         self.size = size
         self.max_speed = max_speed
         self.max_vertical_speed = max_vertical_speed
         self.max_height = max_height
         self.motion_controller = MotionControl(self)
+        self.mission_controller = VehicleMissionControl(self)
         self.power_controller = BatteryController()
 
-    def get_gps(self):
+    def get_location(self):
         return self.gps.get_gps()
 
     def set_gps(self, x, y, z):
@@ -43,13 +43,14 @@ class Drone:
 
     def calculate_gps(self):
         self.gps.calculate_position()
-        if self.get_gps().z > self.max_height:
+        if self.get_location().z > self.max_height:
             debug_print("Drone reached max height")
-        elif self.get_gps().z < 0:
+        elif self.get_location().z < 0:
             debug_print("Drone has crashed")
 
     def calculate_power_consumption(self):
         self.power_controller.calculate_battery(self.get_velocity())
+
 
 
 class SmallDrone(Drone):

@@ -8,9 +8,10 @@ from src.utils.util_classes import ThreeDVector
 
 
 class EnvDroneObj:
-    def __init__(self, drone_socket: socket.socket):
+    def __init__(self, drone_socket: socket.socket,physical_drone_address):
         self.in_viewport = False
         self._socket = drone_socket
+        self.address = physical_drone_address
         self.last_location = ThreeDVector(0, 0, 0)
         self.last_velocity = ThreeDVector(0, 0, 0)
         self.target_location = ThreeDVector(0, 0, 0)

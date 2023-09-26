@@ -37,12 +37,20 @@ class MotionControl:
     def accelerate2(self, direction=0):
         velocity = self.vehicle.get_velocity()
         vel_mag = velocity.get_magnitude()
-        angel = velocity.get_angle()
+        vel_dir = velocity.get_angle()
         if direction == 0:
             if vel_mag < self.max_total_speed:
                 vel_mag += 1
         else:
             if vel_mag >= 1:
                 vel_mag -= 1
-        self.vehicle.set_velocity(vel_mag * math.sin(math.radians(angel)), vel_mag * -math.cos(math.radians(angel)),
+        self.vehicle.set_velocity(vel_mag * math.sin(math.radians(vel_dir)), vel_mag * -math.cos(math.radians(vel_dir)),
                                   velocity.z)
+
+    def go_to_point(self, target):
+        """get a 3dd point and adapt the drone velocity to go to that point"""
+        dx, dy, dz = target.x - self.vehicle.get_gps().x, target.y - self.vehicle.get_gps().y, \
+                     target.z - self.vehicle.get_gps().z
+        v_mag = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+        self.vehicle.set_velocity((dx // v_mag) * self.vehicle.max_speed, (dy // v_mag) * self.vehicle.max_speed,
+                                  (dz // v_mag) * self.vehicle.max_speed)

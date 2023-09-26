@@ -2,6 +2,7 @@ import multiprocessing
 import traceback
 from time import sleep
 
+from src.drone.misson_control import MissionControl
 from src.environment.drones_server import DroneServer
 from src.environment.pygame_handler import PygameHandler
 
@@ -10,6 +11,7 @@ class Environment:
     def __init__(self):
         self.drones_server = DroneServer()
         self.drones_server.start_server()
+        self.mission_control = MissionControl()
         self.pygame_handler = PygameHandler(self.drones_server.clients)
 
 

@@ -11,6 +11,7 @@ from src.environment.EnvDrone import EnvDroneObj
 class DroneServer:
     def __init__(self):
         self.clients = []
+        self.addresses = []
 
     # Server process
     @staticmethod
@@ -21,9 +22,10 @@ class DroneServer:
             s.listen()
             while True:
                 conn, addr = s.accept()
-                clients.append(EnvDroneObj(conn))
-                if len(clients) == 1:
-                    clients[0].start_learning()
+                clients.append(EnvDroneObj(conn, addr))
+
+                # if len(clients) == 1:
+                #     clients[0].start_learning()
                 print('drones server :Connected by', addr)
 
     def start_server(self):

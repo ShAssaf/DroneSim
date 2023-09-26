@@ -1,9 +1,12 @@
 import math
+import os.path
+import random
 import time
 from typing import Optional
+
 from PIL import Image
 
-from src.utils.Consts import DEBUG, Paths, MapConsts, Consts
+from src.utils.Consts import DEBUG, Paths, MapConsts, Consts, NoiseConsts
 
 
 class ThreeDVector:
@@ -68,7 +71,7 @@ class ThreeDVector:
 class InternalGPS:
     def __init__(self, location: Optional[ThreeDVector] = None):
         self.time = time.time()
-        self.location = ThreeDVector() if location is None else location
+        self.location = ThreeDVector(0, 0, 0) if location is None else location
         self.initLocation = self.location
         self.velocity = ThreeDVector(0, 0, 0)
 
@@ -106,9 +109,13 @@ class InternalGPS:
         else:
             dt = Consts.DT
         self.time = time.time()
-        self.location.x += self.velocity.x * dt
-        self.location.y += self.velocity.y * dt
-        self.location.z += self.velocity.z * dt
+        self.location.x += self.velocity.x * dt + random.gauss(NoiseConsts.MEAN, NoiseConsts.STD)
+        self.location.y += self.velocity.y * dt + random.gauss(NoiseConsts.MEAN, NoiseConsts.STD)
+        self.location.z += self.velocity.z * dt + random.gauss(NoiseConsts.MEAN, NoiseConsts.STD)
+
+    def distance(self, other):
+        return math.sqrt((self.location.x - other.x) ** 2 + (self.location.y - other.y) ** 2 + (self.location.z - other.z) ** 2)
+
 
 
 def debug_print(*args, **kwargs):
@@ -136,6 +143,8 @@ def change_map_scale(scale_factor):
 
 def create_scaled_maps():
     for i in [1, 2, 4, 8]:
+        if os.path.exists(f'{Paths.TMP}/scaled_map_{i}.png'):
+            continue
         scale_factor = i
         # Open the image file
         img = Image.open(MapConsts.MAP_PATH)
@@ -151,4 +160,5 @@ def create_scaled_maps():
 
         # Save the scaled image to a file
         scaled_img.save(f'{Paths.TMP}/scaled_map_{i}.png')
+
 

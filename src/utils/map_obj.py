@@ -1,19 +1,19 @@
-from datetime import datetime
-
 import PIL
 import cv2
 import numpy as np
 import pandas as pd
 import pyproj
 from PIL import Image
+
 from src.utils.Consts import Paths, MapConsts
 
 Image.MAX_IMAGE_PIXELS = None  # or any other large number
 
+
 class MapObject:
     Image.MAX_IMAGE_PIXELS = None  # or any other large number
-    def __init__(self, path=MapConsts.MAP_PATH):
 
+    def __init__(self, path=MapConsts.MAP_PATH):
         self.path = path
         self.image = cv2.imread(self.path, cv2.IMREAD_GRAYSCALE)
         self.bounds = self.get_map_bounds()

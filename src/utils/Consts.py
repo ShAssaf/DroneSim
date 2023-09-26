@@ -1,11 +1,14 @@
 import random
 
+import numpy as np
+
 
 class Consts:
     CLOSE_RANGE = 20
     MEDIUM_RANGE = 100
     FAR_RANGE = 500
     DISTANCE_TO_TARGET = 5
+    VERTICAL_TAKE_OFF_MIN = 20
     DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
     DT = 1
     REAL_TIME = False
@@ -15,7 +18,8 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9990
+    PORT = 9993
+    GRAPH_PORT = 9983
 
 
 DEBUG = False  # Set this flag to True to enable debug mode
@@ -33,6 +37,7 @@ class Paths:
     BUILDINGS_GEOJSON_PATH = 'data/geojson/buildings.geojson'
     MAP_BG_HTML_FULL_PATH = 'data/maps/maps_html/map_bg.html'
     MAP_HTML_FULL_PATH = 'data/maps/maps_html/map_no_bg.html'
+    ENVIRONMENT_GRAPH = 'data/environment_graph.pickle'
 
 
 class BatterySpec:
@@ -55,7 +60,7 @@ class SmallDroneDefaults:
 class MapConsts:
     SCREEN_WIDTH = 500
     SCREEN_HEIGHT = 500
-    MAP_PATH = 'data/circles.jpg'
+    MAP_PATH = 'data/part_new_york_3kmm.jpg'
 
 
 class EnvironmentConsts:
@@ -64,3 +69,8 @@ class EnvironmentConsts:
     CHOOSE_DRONE = 2
     FOCUS_DRONE = 3
     MODES_LIST = [DRONES_CONTROL, MAP_CONTROL, CHOOSE_DRONE, FOCUS_DRONE]
+
+
+class NoiseConsts:
+    STD = 0
+    MEAN = 0
