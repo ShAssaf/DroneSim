@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from flask import Flask, request, jsonify
 
@@ -19,13 +21,15 @@ class FakeEnv:
         self.drones_locations = []
 
     def get_env(self, pos: ThreeDVector):
-        return self.map.image[int(pos.y):int(pos.y + RadarSpec.RANGE * 2),
-               int(pos.x): int(pos.x + RadarSpec.RANGE * 2)]
+        return self.map.image[math.floor(pos.y):math.floor(pos.y + RadarSpec.RANGE * 2),
+               math.floor(pos.x): math.floor(pos.x + RadarSpec.RANGE * 2)]
 
     def get_close_env(self, pos: ThreeDVector):
         return self.map.image[
-               int(pos.y + RadarSpec.RANGE - Consts.CLOSE_RANGE):int(pos.y + RadarSpec.RANGE + Consts.CLOSE_RANGE),
-               int(pos.x + RadarSpec.RANGE - Consts.CLOSE_RANGE): int(pos.x + RadarSpec.RANGE + Consts.CLOSE_RANGE)]
+               math.floor(pos.y + RadarSpec.RANGE - Consts.CLOSE_RANGE):math.floor(
+                   pos.y + RadarSpec.RANGE + Consts.CLOSE_RANGE),
+               math.floor(pos.x + RadarSpec.RANGE - Consts.CLOSE_RANGE): math.floor(
+                   pos.x + RadarSpec.RANGE + Consts.CLOSE_RANGE)]
 
     def get_reward(self, pos: ThreeDVector, target: ThreeDVector, velocity: ThreeDVector, battery_level: float):
         velocity_angle = velocity.get_angle()

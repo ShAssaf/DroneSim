@@ -2,7 +2,7 @@ import threading
 import time
 from typing import Type
 
-from src.drone.env_api import EnvironmentAPI
+from src.environment.env_info_api import EnvironmentAPI
 from src.drone.misson_control import VehicleMissionControl, Mission, STATUS
 from src.drone.motion_controller import MotionControl
 from src.drone.power_management import BatteryController

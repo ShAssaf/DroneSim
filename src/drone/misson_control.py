@@ -33,12 +33,16 @@ class Path:
         self.points = points
         self.current_point = 0
 
+
     def set_next_point(self):
         if self.current_point < len(self.points):
             self.current_point += 1
 
     def get_next_point(self):
-        return self.points[self.current_point]
+        if self.current_point < len(self.points):
+            return self.points[self.current_point]
+        return None
+
 
     @staticmethod
     def get_path_from_server(start, target):
@@ -99,7 +103,7 @@ class VehicleMissionControl:
     def mission_step(self):
         if self.vehicle.gps.distance(self.mission.path.get_next_point()) < 10:
             self.mission.path.set_next_point()
-        next_point = self.mission.path.get_next_point()
-        if next_point is None:
-            self.mission.mission_status = STATUS.COMPLETED
+            if self.mission.path.get_next_point() is None:
+                self.mission.mission_status = STATUS.COMPLETED
+                return
         self.vehicle.motion_controller.go_to_point(self.mission.path.get_next_point())

@@ -12,7 +12,7 @@ app = Flask(__name__)
 env_graph = None
 
 
-def load_graph():  # this takes ~ 2min on Shlomo's machine
+def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
     if not exists(Paths.ENVIRONMENT_GRAPH):
         create_graph(cv2.imread(Paths.MAP_PATH, cv2.IMREAD_GRAYSCALE), scale_down=10)
     with open(Paths.ENVIRONMENT_GRAPH, "rb") as file:
@@ -34,6 +34,7 @@ def calculate():
 
 def perform_calculation(data):
     global env_graph
+    print("got request", data['start'], data['target'])
     return nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']),weight='weight')
 
 

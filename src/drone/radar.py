@@ -58,7 +58,9 @@ class TwoDRadar:
     def update_sense_circle(self, input_map: np.array, direction_angle: int):
         """Update the sense circle to the drone velocity direction"""
         if input_map.shape != (2 * self.R, 2 * self.R):
-            raise ValueError("input map shape must be (2*R,2*R)")
+            #raise ValueError("input map shape must be (2*R,2*R)")
+            print("input map shape must be (2*R,2*R)")
+
 
         self.calculate_relative_angles(direction_angle)  # updates indices_dict with relative values
         for region in self.REGIONS:

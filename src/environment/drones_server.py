@@ -18,7 +18,7 @@ class DroneServer:
     def server_thread(clients):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((Consts.HOST, Consts.PORT))
-            print("Server started")
+            print("Drone-Server started")
             s.listen()
             while True:
                 conn, addr = s.accept()
