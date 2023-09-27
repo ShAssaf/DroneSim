@@ -49,8 +49,8 @@ class MotionControl:
 
     def go_to_point(self, target):
         """get a 3dd point and adapt the drone velocity to go to that point"""
-        dx, dy, dz = target.x - self.vehicle.get_gps().x, target.y - self.vehicle.get_gps().y, \
-                     target.z - self.vehicle.get_gps().z
+        dx, dy, dz = target[0] - self.vehicle.get_location().x, target[1] - self.vehicle.get_location().y, \
+                     target[2] - self.vehicle.get_location().z
         v_mag = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
-        self.vehicle.set_velocity((dx // v_mag) * self.vehicle.max_speed, (dy // v_mag) * self.vehicle.max_speed,
-                                  (dz // v_mag) * self.vehicle.max_speed)
+        self.vehicle.set_velocity((dx / v_mag) * self.vehicle.max_speed, (dy / v_mag) * self.vehicle.max_speed,
+                                  (dz / v_mag) * self.vehicle.max_speed)

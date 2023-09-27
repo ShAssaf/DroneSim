@@ -148,13 +148,11 @@ class DroneAgent:
                     elif command.startswith("accelerate"):
                         accelerate_vec = [float(i) for i in command.split(":")[1].split(",")]
                         self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1], accelerate_vec[2])
-                    elif command == "update":
-                        self.drone.calculate_gps()
-                        self.drone.power_controller.calculate_battery(self.drone.get_velocity())
                     # elif command == "start_learning":
                     #     t = threading.Thread(target=self.start, args=())
                     #     t.start()
                     elif command == "get_target_vector":
+                        self.target = self.drone.mission_controller.mission.target
                         serialized_data = pickle.dumps(self.target - self.drone.get_location())
                         self._socket_to_server.sendall(serialized_data)
                     elif command != "":

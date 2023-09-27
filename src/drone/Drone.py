@@ -1,6 +1,9 @@
+import threading
+import time
 from typing import Type
 
-from src.drone.misson_control import STATUS, VehicleMissionControl
+from src.drone.env_api import EnvironmentAPI
+from src.drone.misson_control import VehicleMissionControl, Mission, STATUS
 from src.drone.motion_controller import MotionControl
 from src.drone.power_management import BatteryController
 from src.drone.radar import TwoDRadar
@@ -22,6 +25,10 @@ class Drone:
         self.motion_controller = MotionControl(self)
         self.mission_controller = VehicleMissionControl(self)
         self.power_controller = BatteryController()
+        self.env = None
+
+
+        threading.Thread(target=self.update).start()  # init update thread
 
     def get_location(self):
         return self.gps.get_gps()
@@ -47,6 +54,16 @@ class Drone:
             debug_print("Drone reached max height")
         elif self.get_location().z < 0:
             debug_print("Drone has crashed")
+
+    def update(self):
+        while True:
+            time.sleep(0.01)
+            self.calculate_gps()
+            self.calculate_power_consumption()
+            if self.mission_controller.mission.mission_status == STATUS.IN_PROGRESS:
+                self.mission_controller.mission_step()
+            self.env = EnvironmentAPI.get_env(self.get_location())
+            self.radar.update_sense_circle(self.env, self.get_velocity().get_angle())
 
     def calculate_power_consumption(self):
         self.power_controller.calculate_battery(self.get_velocity())

@@ -70,9 +70,6 @@ class EnvDroneObj:
             print(e)
             self.accelerate(x, y, z)
 
-    def update(self):
-        self._socket.sendall(f"update;".encode())
-
     def start_learning(self):
         self._socket.sendall("start_learning;".encode())
         self.is_learning = True

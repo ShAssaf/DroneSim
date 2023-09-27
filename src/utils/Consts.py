@@ -1,25 +1,21 @@
-import random
-
-import numpy as np
-
-
 class Consts:
     CLOSE_RANGE = 20
     MEDIUM_RANGE = 100
     FAR_RANGE = 500
     DISTANCE_TO_TARGET = 5
     VERTICAL_TAKE_OFF_MIN = 20
-    DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
+    # DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
     DT = 1
-    REAL_TIME = False
+    REAL_TIME = True
     BigDroneSize = 10
     SmallDroneSize = 20
     MAP_IMG_PATH = None
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9993
-    GRAPH_PORT = 9983
+    PORT = 9990
+    GRAPH_PORT = 9993
+    ENV_PORT = 9994
 
 
 DEBUG = False  # Set this flag to True to enable debug mode

@@ -3,9 +3,10 @@ import time
 import pygame
 
 from src.RL.drone_agent_q_learning import DroneAgent
+from src.drone.misson_control import Mission
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject
-from src.utils.util_classes import debug_print, create_scaled_maps
+from src.utils.util_classes import debug_print, create_scaled_maps, ThreeDVector
 
 imitate = False
 class PygameHandler:
@@ -246,7 +247,7 @@ class PygameHandler:
         for idx in range(len(self.drones)):
             drone = self.drones[idx]
             # if not drone.is_learning:
-            drone.update()
+            # drone.update()
             drone.get_location()
             drone.get_velocity()
             self.drones[idx] = drone
@@ -271,4 +272,6 @@ class PygameHandler:
     @staticmethod
     def add_drone(len_drones):
         # todo: add drone in subprocess
-        DroneAgent(name=f"drone{len_drones}")
+        a = DroneAgent(name=f"drone{len_drones}")
+        a.drone.mission_controller.set_mission(Mission(a.drone.get_location(),ThreeDVector(1000, 2500, 0)))
+        a.drone.mission_controller.mission_start()

@@ -1,13 +1,10 @@
-import pickle
 from enum import Enum
-from os.path import exists
 
-import cv2
 import networkx as nx
+import requests
 
-from src.utils.Consts import Paths
-from src.utils.shortest_path_3d import create_graph
-from src.utils.util_classes import debug_print, ThreeDVector
+from src.utils.Consts import Consts
+from src.utils.util_classes import ThreeDVector
 
 
 class STATUS(Enum):
@@ -25,7 +22,7 @@ class Mission:
         self.mission_type = mission_type
         self.mission_status = STATUS.PENDING
         self.mission_id = None
-        self.path = None
+        self.path = Path(Path.get_path_from_server(start_point, target))
 
     def set_path(self, path):
         self.path = Path(path)
@@ -43,6 +40,17 @@ class Path:
     def get_next_point(self):
         return self.points[self.current_point]
 
+    @staticmethod
+    def get_path_from_server(start, target):
+        data = {"start": (start[0], start[1], start[2]), "target": (target[0], target[1], target[2])}
+        response = requests.post(f"http://127.0.0.1:{Consts.GRAPH_PORT}/graph", json=data)
+        if response.status_code == 200:
+            result = [(i[1], i[0], i[2]) for i in response.json()["result"]]  # need to inverse graph coordinates
+
+            return result
+        else:
+            print("Error:", response.json()["error"])
+            return None
 
 class MissionControl:
     def __init__(self, mission_queue=[]):
@@ -54,11 +62,6 @@ class MissionControl:
         pass
         # self.gogogo()
 
-    def load_graph(self):
-        if not exists(Paths.ENVIRONMENT_GRAPH):
-            create_graph(cv2.imread(Paths.MAP_PATH, cv2.IMREAD_GRAYSCALE), scale_down=10)
-        with open(Paths.ENVIRONMENT_GRAPH, "rb") as file:
-            self.env_graph = pickle.load(file)
 
     def gogogo(self):
         while True:
@@ -92,13 +95,6 @@ class VehicleMissionControl:
 
     def mission_start(self):
         self.mission.mission_status = STATUS.IN_PROGRESS
-        while True:
-            if self.mission.mission_status == STATUS.IN_PROGRESS:
-                self.mission_step()
-            elif self.mission.mission_status == STATUS.COMPLETED:
-                break
-            else:
-                debug_print("Mission failed")
 
     def mission_step(self):
         if self.vehicle.gps.distance(self.mission.path.get_next_point()) < 10:

@@ -67,6 +67,9 @@ class ThreeDVector:
             d -= 360
         return d
 
+    def to_dict(self):
+        return {'x': self.x, 'y': self.y, 'z': self.z}
+
 
 class InternalGPS:
     def __init__(self, location: Optional[ThreeDVector] = None):
@@ -114,7 +117,7 @@ class InternalGPS:
         self.location.z += self.velocity.z * dt + random.gauss(NoiseConsts.MEAN, NoiseConsts.STD)
 
     def distance(self, other):
-        return math.sqrt((self.location.x - other.x) ** 2 + (self.location.y - other.y) ** 2 + (self.location.z - other.z) ** 2)
+        return math.sqrt((self.location.x - other[0]) ** 2 + (self.location.y - other[1]) ** 2 + (self.location.z - other[2]) ** 2)
 
 
 

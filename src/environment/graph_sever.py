@@ -34,7 +34,7 @@ def calculate():
 
 def perform_calculation(data):
     global env_graph
-    return nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']))
+    return nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']),weight='weight')
 
 
 # push context manually to app
