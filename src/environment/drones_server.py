@@ -23,9 +23,6 @@ class DroneServer:
             while True:
                 conn, addr = s.accept()
                 clients.append(EnvDroneObj(conn, addr))
-
-                # if len(clients) == 1:
-                #     clients[0].start_learning()
                 print('drones server :Connected by', addr)
 
     def start_server(self):

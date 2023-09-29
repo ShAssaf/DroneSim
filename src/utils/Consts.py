@@ -6,14 +6,14 @@ class Consts:
     VERTICAL_TAKE_OFF_MIN = 20
     # DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
     DT = 1
-    REAL_TIME = False
+    REAL_TIME = True
     BigDroneSize = 10
     SmallDroneSize = 20
     MAP_IMG_PATH = None
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9991
+    PORT = 9982
     GRAPH_PORT = 9993
     ENV_PORT = 9994
 
@@ -23,6 +23,7 @@ MANUAL_DRONE = True
 
 
 class Paths:
+    ENVIRONMENT_PATHS = 'data/optional_paths.pickle'
     TMP = '/tmp/'
     MAP_BOUNDS_PATH = 'data/csvs/map_bounds.csv'
     MAP_PATH = './data/maps/no_bg/no_bg_result.png'

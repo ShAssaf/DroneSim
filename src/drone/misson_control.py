@@ -16,13 +16,16 @@ class STATUS(Enum):
 
 class Mission:
 
-    def __init__(self, start_point, target=ThreeDVector(-1, -1, -1), mission_type='Dummy'):
+    def __init__(self, start_point, target=ThreeDVector(-1, -1, -1), mission_type='Dummy',path=None):
         self.start_point = start_point
         self.target = target
         self.mission_type = mission_type
         self.mission_status = STATUS.PENDING
         self.mission_id = None
-        self.path = Path(Path.get_path_from_server(start_point, target))
+        if path is None:
+            self.path = Path(Path.get_path_from_server(start_point, target))
+        else:
+            self.path = Path(path)
 
     def set_path(self, path):
         self.path = Path(path)
@@ -92,7 +95,7 @@ class MissionControl:
 class VehicleMissionControl:
     def __init__(self, vehicle):
         self.vehicle = vehicle
-        self.mission = Mission(self.vehicle.get_location())
+        self.mission = Mission(self.vehicle.get_location(),path=['dummy'])
 
     def set_mission(self, mission):
         self.mission = mission

@@ -10,7 +10,9 @@ from src.utils.Consts import DEBUG, Paths, MapConsts, Consts, NoiseConsts
 
 
 class ThreeDVector:
-    def __init__(self, x, y, z):
+    def __init__(self, x=0, y=0, z=0, threeDtuple=None):
+        if threeDtuple is not None:
+            x, y, z = threeDtuple
         self.coordinates = [x, y, z]
         self.x = x
         self.y = y

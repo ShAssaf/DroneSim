@@ -14,7 +14,7 @@ class PygameHandler:
         create_scaled_maps()
         pygame.init()  #
         self.drones = drones_list
-        self.add_drone(len(self.drones))
+        # self.add_drone(len(self.drones))
         self.FONT = pygame.font.Font('freesansbold.ttf', Consts.FONT_SIZE)
         self.clock = pygame.time.Clock()
         self.fps = 120
@@ -269,9 +269,9 @@ class PygameHandler:
             f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
             f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
             f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}")
-    @staticmethod
-    def add_drone(len_drones):
-        # todo: add drone in subprocess
-        a = DroneAgent(name=f"drone{len_drones}")
-        a.drone.mission_controller.set_mission(Mission(a.drone.get_location(),ThreeDVector(1000, 2500, 0)))
-        a.drone.mission_controller.mission_start()
+    # @staticmethod
+    # def add_drone(len_drones):
+    #     # todo: add drone in subprocess
+    #     a = DroneAgent(name=f"drone{len_drones}")
+    #     a.drone.mission_controller.set_mission(Mission(a.drone.get_location(),ThreeDVector(1000, 2500, 0)))
+    #     a.drone.mission_controller.mission_start()

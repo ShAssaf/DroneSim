@@ -17,7 +17,7 @@ class DroneAgent:
                  initial_position: ThreeDVector = ThreeDVector(500, 500, 0)):
         self.drone = SmallDrone(name, InternalGPS(initial_position))
         self._socket_to_server = None
-        self.env = FakeEnv()
+        # self.env = FakeEnv()
         self.target = self.drone.mission_controller.mission.target
         self.QAgent = QLearning()
         self.out_of_map = False
@@ -53,13 +53,13 @@ class DroneAgent:
         elif action == 4:
             pass
         self.drone.gps.calculate_position()
-        try:
-            self.drone.radar.update_sense_circle(self.env.get_env(self.drone.gps.get_gps()),
-                                                 self.drone.gps.get_velocity().get_angle())
-        except:
-            self.drone.radar.update_sense_circle(np.ones((2 * RadarSpec.RANGE, 2 * RadarSpec.RANGE)),
-                                                 self.drone.gps.get_velocity().get_angle())
-            self.out_of_map = True
+        # try:
+        #     self.drone.radar.update_sense_circle(self.env.get_env(self.drone.gps.get_gps()),
+        #                                          self.drone.gps.get_velocity().get_angle())
+        # except:
+        #     self.drone.radar.update_sense_circle(np.ones((2 * RadarSpec.RANGE, 2 * RadarSpec.RANGE)),
+        #                                          self.drone.gps.get_velocity().get_angle())
+        #     self.out_of_map = True
 
     def start(self):
 
@@ -86,7 +86,7 @@ class DroneAgent:
 
                 # 5. Agent performs action
                 next_state = self.get_state()
-                reward, done = self.env.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity(),
+                reward, done = self.eniv.get_reward(self.drone.get_gps(), self.target, self.drone.gps.get_velocity(),
                                                    self.drone.power_controller.get_battery_percentage())
 
 

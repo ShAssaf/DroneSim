@@ -57,7 +57,7 @@ class Drone:
 
     def update(self):
         while True:
-            time.sleep(0.01)
+            time.sleep(1)
             self.calculate_gps()
             self.calculate_power_consumption()
             if self.mission_controller.mission.mission_status == STATUS.IN_PROGRESS:
