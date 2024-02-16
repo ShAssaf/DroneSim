@@ -10,7 +10,7 @@ from src.utils.util_classes import ThreeDVector
 app = Flask(__name__)
 
 
-class FakeEnv:
+class EnvironmentInfoServer:
     PAD = RadarSpec.RANGE
 
     def __init__(self):
@@ -62,7 +62,7 @@ class FakeEnv:
     #     return source, target
 
 
-env = FakeEnv()
+env = EnvironmentInfoServer()
 
 
 @app.route('/get_env', methods=['POST'])

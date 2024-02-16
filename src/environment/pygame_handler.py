@@ -1,5 +1,3 @@
-import time
-
 import pygame
 
 from src.RL.drone_agent_q_learning import DroneAgent
@@ -7,8 +5,9 @@ from src.drone.misson_control import Mission
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject
 from src.utils.util_classes import debug_print, create_scaled_maps, ThreeDVector
-
 imitate = False
+
+
 class PygameHandler:
     def __init__(self, drones_list):
         create_scaled_maps()
@@ -175,8 +174,8 @@ class PygameHandler:
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            x = self.drones[self.chosen_drone_index].last_location.x*self.zoom_factor - MapConsts.SCREEN_WIDTH / 2
-            y = self.drones[self.chosen_drone_index].last_location.y*self.zoom_factor - MapConsts.SCREEN_HEIGHT / 2
+            x = self.drones[self.chosen_drone_index].last_location.x * self.zoom_factor - MapConsts.SCREEN_WIDTH / 2
+            y = self.drones[self.chosen_drone_index].last_location.y * self.zoom_factor - MapConsts.SCREEN_HEIGHT / 2
             if x < 0:
                 x = 0
             elif x > self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH:
@@ -269,9 +268,10 @@ class PygameHandler:
             f" y : {int(self.drones[self.chosen_drone_index].last_velocity.y)}" +
             f" z : {int(self.drones[self.chosen_drone_index].last_velocity.z)}" +
             f" battery : {int(self.drones[self.chosen_drone_index].last_battery_status)}")
+
     # @staticmethod
-    # def add_drone(len_drones):
-    #     # todo: add drone in subprocess
-    #     a = DroneAgent(name=f"drone{len_drones}")
-    #     a.drone.mission_controller.set_mission(Mission(a.drone.get_location(),ThreeDVector(1000, 2500, 0)))
-    #     a.drone.mission_controller.mission_start()
+    def add_drone(len_drones):
+        # todo: add drone in subprocess
+        a = DroneAgent(name=f"drone{len_drones}")
+        a.drone.mission_controller.set_mission(Mission(a.drone.get_location(), ThreeDVector(1000, 2500, 0)))
+        a.drone.mission_controller.mission_start()

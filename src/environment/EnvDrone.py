@@ -1,14 +1,13 @@
 import pickle
 import socket
 
-import pygame
-
-from src.utils.Consts import MapConsts, Consts
+from src.utils.Consts import MapConsts
 from src.utils.util_classes import ThreeDVector
 
 
 class EnvDroneObj:
-    def __init__(self, drone_socket: socket.socket,physical_drone_address):
+    def __init__(self, drone_socket: socket.socket, physical_drone_address):
+        self.color = None
         self.in_viewport = False
         self._socket = drone_socket
         self.address = physical_drone_address
@@ -18,7 +17,6 @@ class EnvDroneObj:
         self.last_battery_status = 100
         self.is_learning = False
 
-
     def adjust_drone_color(self, height):
         if height < 0:
             self.color = ThreeDVector(0, 0, 0)
@@ -27,7 +25,7 @@ class EnvDroneObj:
             if height > 255:
                 self.color = ThreeDVector(255, 255, (height % 255))
             else:
-                self.color = ThreeDVector(255, height, 0)
+                self.color = ThreeDVector(255, min(height * 3, 255), 0)
 
     def check_in_viewport(self, viewport_x, viewport_y, zoom_factor):
         if viewport_x < self.last_location.x * zoom_factor < viewport_x + MapConsts.SCREEN_WIDTH \

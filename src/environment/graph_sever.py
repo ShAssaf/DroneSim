@@ -13,11 +13,14 @@ env_graph = None
 
 
 def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
+    print("Loading graph...")
     if not exists(Paths.ENVIRONMENT_GRAPH):
+        print("Graph does not exist. Creating graph...")
         create_graph(cv2.imread(Paths.MAP_PATH, cv2.IMREAD_GRAYSCALE), scale_down=10)
     with open(Paths.ENVIRONMENT_GRAPH, "rb") as file:
         global env_graph
         env_graph = pickle.load(file)
+        print("Graph loaded successfully.")
 
 
 @app.route('/graph', methods=['POST'])
@@ -25,17 +28,23 @@ def calculate():
     try:
         # Assuming the client sends a JSON request with data to calculate
         request_data = request.json
+        print("Received request data: ", request_data)
         # Perform your calculation here
         result = perform_calculation(request_data)
+        print("Calculation result: ", result)
         return jsonify({"result": result})
     except Exception as e:
+        print("Error occurred: ", str(e))
         return jsonify({"error": str(e)}), 400
 
 
 def perform_calculation(data):
     global env_graph
-    print("got request", data['start'], data['target'])
-    return nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']),weight='weight')
+    print("Performing calculation with data: ", data)
+    print("Start: ", data['start'], " Target: ", data['target'])
+    result = nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']),weight='weight')
+    print("Calculation completed. Result: ", result)
+    return result
 
 
 # push context manually to app
@@ -43,4 +52,5 @@ with app.app_context():
     load_graph()
 
 if __name__ == '__main__':
+    print("Starting server...")
     app.run(debug=True, port=Consts.GRAPH_PORT)

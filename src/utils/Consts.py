@@ -6,16 +6,16 @@ class Consts:
     VERTICAL_TAKE_OFF_MIN = 20
     # DRONE_POSITIONS_PATH = 'data/csvs/source_target.csv'
     DT = 1
-    REAL_TIME = True
+    REAL_TIME = False
     BigDroneSize = 10
     SmallDroneSize = 20
     MAP_IMG_PATH = None
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9982
-    GRAPH_PORT = 9993
-    ENV_PORT = 9994
+    PORT = 9988
+    GRAPH_PORT = 9995
+    ENV_PORT = 9996
 
 
 DEBUG = False  # Set this flag to True to enable debug mode

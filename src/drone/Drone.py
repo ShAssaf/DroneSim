@@ -2,11 +2,11 @@ import threading
 import time
 from typing import Type
 
-from src.environment.env_info_api import EnvironmentAPI
-from src.drone.misson_control import VehicleMissionControl, Mission, STATUS
+from src.drone.misson_control import VehicleMissionControl, STATUS
 from src.drone.motion_controller import MotionControl
 from src.drone.power_management import BatteryController
 from src.drone.radar import TwoDRadar
+from src.environment.env_info_api import EnvironmentAPI
 from src.utils.Consts import Consts, SmallDroneDefaults, RadarSpec
 from src.utils.util_classes import InternalGPS, debug_print
 
@@ -26,7 +26,6 @@ class Drone:
         self.mission_controller = VehicleMissionControl(self)
         self.power_controller = BatteryController()
         self.env = None
-
 
         threading.Thread(target=self.update).start()  # init update thread
 
@@ -67,7 +66,6 @@ class Drone:
 
     def calculate_power_consumption(self):
         self.power_controller.calculate_battery(self.get_velocity())
-
 
 
 class SmallDrone(Drone):

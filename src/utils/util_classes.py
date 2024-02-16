@@ -10,13 +10,15 @@ from src.utils.Consts import DEBUG, Paths, MapConsts, Consts, NoiseConsts
 
 
 class ThreeDVector:
-    def __init__(self, x=0, y=0, z=0, threeDtuple=None):
+    def __init__(self, x=0, y=0, z=0, threeDtuple=None, y_x_z=True):
         if threeDtuple is not None:
             x, y, z = threeDtuple
         self.coordinates = [x, y, z]
-        self.x = x
-        self.y = y
-        self.z = z
+        if y_x_z:
+            self.coordinates = [y, x, z]
+        self.x = self.coordinates[0]
+        self.y = self.coordinates[1]
+        self.z = self.coordinates[2]
 
     def __getitem__(self, index):
         return self.coordinates[index]
@@ -31,7 +33,8 @@ class ThreeDVector:
             z_diff = self.z - other.z
             return ThreeDVector(x_diff, y_diff, z_diff)
         else:
-            raise TypeError("Unsupported operand type. The '-' operator is supported between instances of ThreeDVector.")
+            raise TypeError(
+                "Unsupported operand type. The '-' operator is supported between instances of ThreeDVector.")
 
     @property
     def r(self):
@@ -62,7 +65,7 @@ class ThreeDVector:
         return (self.coordinates[0] ** 2 + self.coordinates[1] ** 2 + self.coordinates[2] ** 2) ** 0.5
 
     def get_angle(self):
-        d = math.degrees(math.atan2(self.y, self.x)) +90 # -self.y because the y axis is inverted
+        d = math.degrees(math.atan2(self.y, self.x)) + 90  # -self.y because the y axis is inverted
         if d < -180:
             d += 360
         if d > 180:
@@ -71,6 +74,13 @@ class ThreeDVector:
 
     def to_dict(self):
         return {'x': self.x, 'y': self.y, 'z': self.z}
+
+    def __str__(self):
+        return f"({self.x}, {self.y}, {self.z})"
+
+    @staticmethod
+    def y_x_z2x_y_z(coor):
+        return [coor[1], coor[0], coor[2]]
 
 
 class InternalGPS:
@@ -119,8 +129,8 @@ class InternalGPS:
         self.location.z += self.velocity.z * dt + random.gauss(NoiseConsts.MEAN, NoiseConsts.STD)
 
     def distance(self, other):
-        return math.sqrt((self.location.x - other[0]) ** 2 + (self.location.y - other[1]) ** 2 + (self.location.z - other[2]) ** 2)
-
+        return math.sqrt(
+            (self.location.x - other[0]) ** 2 + (self.location.y - other[1]) ** 2 + (self.location.z - other[2]) ** 2)
 
 
 def debug_print(*args, **kwargs):
@@ -165,5 +175,3 @@ def create_scaled_maps():
 
         # Save the scaled image to a file
         scaled_img.save(f'{Paths.TMP}/scaled_map_{i}.png')
-
-

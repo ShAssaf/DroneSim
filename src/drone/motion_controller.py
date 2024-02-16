@@ -1,8 +1,9 @@
 import math
 
+from src.utils.logger import get_logger
 from src.utils.util_classes import ThreeDVector, debug_print
 
-
+logger = get_logger(__name__)
 class MotionControl:
     def __init__(self, vehicle):
         self.vehicle = vehicle
@@ -47,10 +48,15 @@ class MotionControl:
         self.vehicle.set_velocity(vel_mag * math.sin(math.radians(vel_dir)), vel_mag * -math.cos(math.radians(vel_dir)),
                                   velocity.z)
 
-    def go_to_point(self, target):
+    def go_to_point(self, target):  # y x z
+        logger.info(f"{self.vehicle.name}: Going to point {target}")
         """get a 3dd point and adapt the drone velocity to go to that point"""
         dx, dy, dz = target[0] - self.vehicle.get_location().x, target[1] - self.vehicle.get_location().y, \
-                     target[2] - self.vehicle.get_location().z
+            target[2] - self.vehicle.get_location().z
         v_mag = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
-        self.vehicle.set_velocity((dx / v_mag) * self.vehicle.max_speed, (dy / v_mag) * self.vehicle.max_speed,
-                                  (dz / v_mag) * self.vehicle.max_speed)
+        if v_mag > 0:
+            self.vehicle.set_velocity((dx / v_mag) * self.vehicle.max_speed, (dy / v_mag) * self.vehicle.max_speed,
+                                      (dz / v_mag) * self.vehicle.max_speed)
+
+    def stop(self):
+        self.vehicle.set_velocity(0, 0, 0)

@@ -12,6 +12,7 @@ class DroneServer:
     def __init__(self):
         self.clients = []
         self.addresses = []
+        self.start_server()
 
     # Server process
     @staticmethod
@@ -29,5 +30,3 @@ class DroneServer:
         s = threading.Thread(target=self.server_thread, args=(self.clients,))
         s.start()
         sleep(4)
-
-

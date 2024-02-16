@@ -60,14 +60,17 @@ class TwoDRadar:
         if input_map.shape != (2 * self.R, 2 * self.R):
             #raise ValueError("input map shape must be (2*R,2*R)")
             print("input map shape must be (2*R,2*R)")
-
+            return
 
         self.calculate_relative_angles(direction_angle)  # updates indices_dict with relative values
         for region in self.REGIONS:
             for scope in self.SCOPES:
-                self._sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
-                self._sensor_compact_date_dict[(region[0], scope[0])] = np.count_nonzero(
-                    self._sensor_date_dict[(region[0], scope[0])])/self._sensor_date_dict[(region[0], scope[0])].size
+                try:
+                    self._sensor_date_dict[(region[0], scope[0])] = input_map[self.indices_dict[(region[0], scope[0])]]
+                    self._sensor_compact_date_dict[(region[0], scope[0])] = np.count_nonzero(
+                        self._sensor_date_dict[(region[0], scope[0])])/self._sensor_date_dict[(region[0], scope[0])].size
+                except:
+                    pass
         pass
 
     def pre_calculation(self):
