@@ -25,7 +25,7 @@ def main():
         d.drone.mission_control.set_mission(
             Mission(ThreeDVector(threeDtuple=m[0]), ThreeDVector(threeDtuple=m[1]), path=m[2]))
         d.drone.mission_control.mission_start()
-    pg.drones = pg.pygame_handler.start_simulation()
+    pg.pygame_handler.start_simulation()  # todo move it to init
 
 
 if __name__ == "__main__":

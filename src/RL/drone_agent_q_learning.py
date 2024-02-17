@@ -20,34 +20,34 @@ class DroneAgent:
         # self.initial_position = initial_position
         self.connect_to_server()
 
-    def get_state(self):
-        # todo: add battary level
-        radar_data = self.drone.radar.get_sensor_data(compact=True, as_vector=True)
-        velocity_angle = self.drone.get_velocity().get_angle()
-        velocity_magnitude = self.drone.get_velocity().get_magnitude()
-        target_vector = self.target - self.drone.get_location()
-        target_angle = target_vector.get_angle()
-        target_magnitude = target_vector.get_magnitude()
-        relative_angle = target_angle - velocity_angle
-        battery_level = 100  # self.drone.power_controller.get_battery_level()
-        return np.concatenate(
-            (radar_data,
-             [relative_angle / 180, velocity_magnitude / 10],
-             [target_angle / 180, target_magnitude / 1000],
-             [battery_level / 100]))  # normalize
+    # def get_state(self):
+    #     # todo: add battary level
+    #     radar_data = self.drone.radar.get_sensor_data(compact=True, as_vector=True)
+    #     velocity_angle = self.drone.get_velocity().get_angle()
+    #     velocity_magnitude = self.drone.get_velocity().get_magnitude()
+    #     target_vector = self.target - self.drone.get_location()
+    #     target_angle = target_vector.get_angle()
+    #     target_magnitude = target_vector.get_magnitude()
+    #     relative_angle = target_angle - velocity_angle
+    #     battery_level = 100  # self.drone.power_controller.get_battery_level()
+    #     return np.concatenate(
+    #         (radar_data,
+    #          [relative_angle / 180, velocity_magnitude / 10],
+    #          [target_angle / 180, target_magnitude / 1000],
+    #          [battery_level / 100]))  # normalize
 
-    def step(self, action):
-        if action == 0:
-            self.drone.motion_controller.accelerate2(0)
-        elif action == 1:
-            self.drone.motion_controller.accelerate2(1)
-        elif action == 2:
-            self.drone.motion_controller.turn_to(0)
-        elif action == 3:
-            self.drone.motion_controller.turn_to(1)
-        elif action == 4:
-            pass
-        self.drone.gps.calculate_position()
+    # def step(self, action):
+    #     if action == 0:
+    #         self.drone.motion_controller.accelerate2(0)
+    #     elif action == 1:
+    #         self.drone.motion_controller.accelerate2(1)
+    #     elif action == 2:
+    #         self.drone.motion_controller.turn_to(0)
+    #     elif action == 3:
+    #         self.drone.motion_controller.turn_to(1)
+    #     elif action == 4:
+    #         pass
+    #     self.drone.gps.calculate_position()
         # try:
         #     self.drone.radar.update_sense_circle(self.env.get_env(self.drone.gps.get_gps()),
         #                                          self.drone.gps.get_velocity().get_angle())
