@@ -28,7 +28,7 @@ class MapObject:
     def set_map_bounds(southwest_lat, southwest_long, northeast_lat, northeast_long, comment):
         df = pd.read_csv(Paths.MAP_BOUNDS_PATH)
         new_record = pd.DataFrame({'minx': southwest_long, 'miny': southwest_lat, 'maxx': northeast_long,
-                                   'maxy': northeast_lat, 'comment': comment})
+                                   'maxy': northeast_lat, 'comment': comment}, index=[0])
 
         # Check if the record already exists in the DataFrame
         is_duplicate = df.isin(new_record).all(axis=None)

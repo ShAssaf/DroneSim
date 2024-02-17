@@ -3,6 +3,8 @@ import sys
 import traceback
 from PIL import Image
 
+from src.utils.Consts import Paths
+
 
 def get_lng(file_name):
     return float(file_name.split('_')[1].split('.')[0] + '.' + file_name.split('_')[1].split('.')[1])
@@ -17,7 +19,7 @@ def find_closest_floats(float_list):
 
 
 def map_stitcher_main(mode='bg'):
-    all_files = os.listdir(f'./data/map_scaper/{mode}')
+    all_files = os.listdir(f'{Paths.MAPS}//{mode}')
     all_files = [file for file in all_files if file.endswith('.png')]
     lats = set([float(file.split('_')[0]) for file in all_files])
     lats = sorted(list(lats))
@@ -29,7 +31,7 @@ def map_stitcher_main(mode='bg'):
         longs = sorted(list(longs))
         image_list = []
         for lng in longs:
-            image_list.append(Image.open(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}/{lat}_{lng}.png'))
+            image_list.append(Image.open(f'{Paths.MAPS}/{mode}/{lat}_{lng}.png'))
 
         new_lat_image = Image.new("RGB", (sum([i.size[0] for i in image_list]), image_list[0].size[1]))
         x_offset = 0
@@ -44,8 +46,8 @@ def map_stitcher_main(mode='bg'):
         result.paste(im, (0, y_offset))
         y_offset += im.size[1]
     try:
-        result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.png')
-        result.save(f'/Users/shlomo/Desktop/reps/604/data/map_scaper/{mode}_result.tif')
+        result.save(f'{Paths.MAPS}/{mode}_result.png')
+        result.save(f'{Paths.MAPS}/{mode}_result.tif')
     except:
         traceback.print_exc()
 

@@ -1,12 +1,10 @@
 import math
-import geojsonio
 import geojson
 import matplotlib.pyplot as plt
 import pandas as pd
 import pyproj
 from mpl_toolkits.basemap import Basemap
 import geopandas as gpd
-from src.get_image_from_google_maps import get_image_from_google_maps
 from src.utils.Consts import Paths
 
 
@@ -19,6 +17,7 @@ class GeoJsonParser:
         self.building_types = self.get_all_building_types()
         self.roads = self.get_all_roads()
         self.buildings = self.get_all_buildings()
+        pass
 
     def get_building_coordinates(self, building_type):
         coordinates = []
@@ -101,16 +100,16 @@ class GeoJsonParser:
         # Return the elements from the current list, along with the elements from the sub-lists
         return elements
 
-    @staticmethod
-    def create_boarder_for_plotting(coordinates):
-        # create a new figure
-        plt.figure(figsize=(50, 50))
-
-        # create a Basemap instance
-        m = Basemap(
-            projection='merc', llcrnrlat=coordinates[0][1], urcrnrlat=coordinates[1][1]
-            , llcrnrlon=coordinates[0][0], urcrnrlon=coordinates[1][0])
-        return m
+    # @staticmethod
+    # def create_boarder_for_plotting(coordinates):
+    #     # create a new figure
+    #     plt.figure(figsize=(50, 50))
+    #
+    #     # create a Basemap instance
+    #     m = Basemap(
+    #         projection='merc', llcrnrlat=coordinates[0][1], urcrnrlat=coordinates[1][1]
+    #         , llcrnrlon=coordinates[0][0], urcrnrlon=coordinates[1][0])
+    #     return m
 
     @staticmethod
     def add_points_for_plotting(coordinates, sim_map, color='red'):
@@ -204,8 +203,8 @@ def convert_wgs_to_utm(lat, lon):
     return x, y
 
 
-#a = GeoJsonParser()
+a = GeoJsonParser()
 # a.plot_heat_map()
-#a.plot_map(a.get_building_coordinates('tower'))
-# # save_list_to_file(a.get_all_buildings(), 'buildings.txt')
-# # # a.get_google_map_image_by_border()
+# a.plot_map(a.get_building_coordinates('tower'))
+# save_list_to_file(a.get_all_buildings(), 'buildings.txt')
+# a.get_google_map_image_by_border()

@@ -23,18 +23,22 @@ MANUAL_DRONE = True
 
 
 class Paths:
+    BASE_PATH = 'D:/תומר/לימודים/שנה ד/601/project/DroneSim'
     ENVIRONMENT_PATHS = 'data/optional_paths.pickle'
     TMP = '/tmp/'
+    MAPS = 'data/maps'
     MAP_BOUNDS_PATH = 'data/csvs/map_bounds.csv'
-    MAP_PATH = './data/maps/no_bg/no_bg_result.png'
-    MAP_BG_PATH = 'data/maps/bg/bg_result.png'
-    RESCALED_MAP_PATH = 'data/maps/no_bg/rescaled_map_1_pixel_per_{scale}_meter.png'
+    MAP_PATH = MAPS + '/no_bg/no_bg_result.png'
+    MAP_BG_PATH = MAPS + '/bg/bg_result.png'
+    RESCALED_MAP_PATH = MAPS + '/no_bg/rescaled_map_1_pixel_per_{scale}_meter.png'
     RESCALED_BG_MAP_PATH = 'data/maps/bg/rescaled_map_1_pixel_per_{scale}_meter.png'
-    GEOJSON_PATH = 'data/geojson/map_geojson.geojson'
+    GEOJSON_PATH = 'data/geojson/NewMapfinal.geojson'
     BUILDINGS_GEOJSON_PATH = 'data/geojson/buildings.geojson'
-    MAP_BG_HTML_FULL_PATH = 'data/maps/maps_html/map_bg.html'
-    MAP_HTML_FULL_PATH = 'data/maps/maps_html/map_no_bg.html'
+    MAP_BG_HTML_FULL_PATH = MAPS +'/maps_html/map_bg.html'
+    MAP_NO_BG_HTML_FULL_PATH = MAPS + '/maps_html/map_no_bg.html'
+    MAP_HTML_FULL_PATH = MAPS + '/maps_html/map_no_bg.html'
     ENVIRONMENT_GRAPH = 'data/environment_graph.pickle'
+
 
 
 class BatterySpec:

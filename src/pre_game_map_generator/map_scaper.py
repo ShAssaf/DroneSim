@@ -28,17 +28,17 @@ def get_bounds_from_browser(driver, map_variable):
 
 
 def map_scraper_main(mode='bg'):
-    if os.path.exists(f"./data/map_scaper/{mode}") is False:
-        os.mkdir(f"./data/map_scaper/{mode}")
+    if os.path.exists(f"{Paths.MAPS}/{mode}") is False:
+        os.mkdir(f"{Paths.MAPS}/{mode}")
     else:
-        for file in os.listdir(f"./data/map_scaper/{mode}"):
-            os.remove(f"./data/map_scaper/{mode}/{file}")
+        for file in os.listdir(f"{Paths.MAPS}/{mode}"):
+            os.remove(f"{Paths.MAPS}/{mode}/{file}")
     # Create a new Chrome session
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     if mode == 'bg':
-        driver.get(f'file:///{Paths.MAP_BG_HTML_FULL_PATH}')
+        driver.get(f'{Paths.BASE_PATH}/{Paths.MAP_BG_HTML_FULL_PATH}')
     else:
-        driver.get(f'file:///{Paths.MAP_HTML_FULL_PATH}')
+        driver.get(f'{Paths.BASE_PATH}/{Paths.MAP_NO_BG_HTML_FULL_PATH}')
 
     # Extract the HTML source from the webpage
     html_source = driver.page_source
@@ -55,9 +55,9 @@ def map_scraper_main(mode='bg'):
 
     # Use regex to find the map variable.
     # This pattern looks for strings that start with "map_" followed by 32 alphanumeric characters.
-    match = re.search(r'map_[a-z0-9]{10,}', html_source)
+    match = re.search(r'#map_[a-z0-9]{10,}', html_source)
     # Check if a match was found
-    map_variable = match.group(0)
+    map_variable = match.group(0)[1:]
 
     # Get the initial bounds of the map
     move_browser_view(driver, map_variable, lat_min, long_min)
@@ -77,7 +77,7 @@ def map_scraper_main(mode='bg'):
             if northeast_lat > map_max_lat:
                 map_max_lat = northeast_lat
 
-            driver.save_screenshot(f"./data/map_scaper/{mode}/{southwest_lat}_{southwest_lng}.png")
+            driver.save_screenshot(f"{Paths.MAPS}/{mode}/{southwest_lat}_{southwest_lng}.png")
 
             # Calculate the longitude of the new center, shifting to the right by the longitude interval
             new_center_lng = northeast_lng + lng_interval / 2

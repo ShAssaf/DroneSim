@@ -2,13 +2,14 @@ import random
 import folium
 import json
 from src.utils import Consts
+from src.utils.Consts import Paths
 from src.utils.map_obj import MapObject
 
 """This script creates a map with a GeoJSON overlay and a colorbar legend."""
 
 
 def filter_geojson(input_file, output_file):
-    with open(input_file, 'r') as file:
+    with open(input_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
 
     # Filter features
@@ -129,8 +130,8 @@ def map_creator_main(geojson_path=Consts.Paths.GEOJSON_PATH):
     folium.GeoJson(Consts.Paths.BUILDINGS_GEOJSON_PATH, style_function=height_style_function).add_to(map_no_bg)
 
     # save the map
-    map_no_bg.save("./data/map_no_bg.html")
-    map_bg.save("./data/map_bg.html")
+    map_no_bg.save(Paths.MAP_NO_BG_HTML_FULL_PATH)
+    map_bg.save(Paths.MAP_BG_HTML_FULL_PATH)
     # map_black_CartoDB.save("./data/map_black_CartoDB.html")
 
 
