@@ -14,7 +14,7 @@ class DroneAgent:
                  initial_position: ThreeDVector = ThreeDVector(500, 500, 0)):
         self.drone = SmallDrone(name, InternalGPS(initial_position))
         self._socket_to_server = None
-        self.target = self.drone.mission_controller.mission.target
+        self.target = self.drone.mission_control.mission.target
         self.out_of_map = False
 
         # self.initial_position = initial_position
@@ -141,7 +141,7 @@ class DroneAgent:
                         self.drone.motion_controller.accelerate(accelerate_vec[0], accelerate_vec[1], accelerate_vec[2])
 
                     elif command == "get_target_vector":
-                        self.target = self.drone.mission_controller.mission.target
+                        self.target = self.drone.mission_control.mission.target
                         serialized_data = pickle.dumps(self.target - self.drone.get_location())
                         self._socket_to_server.sendall(serialized_data)
                     elif command != "":

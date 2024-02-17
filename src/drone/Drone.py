@@ -23,7 +23,7 @@ class Drone:
         self.max_vertical_speed = max_vertical_speed
         self.max_height = max_height
         self.motion_controller = MotionControl(self)
-        self.mission_controller = VehicleMissionControl(self)
+        self.mission_control = VehicleMissionControl(self)
         self.power_controller = BatteryController()
         self.env = None
 
@@ -59,8 +59,8 @@ class Drone:
             time.sleep(1)
             self.calculate_gps()
             self.calculate_power_consumption()
-            if self.mission_controller.mission.mission_status == STATUS.IN_PROGRESS:
-                self.mission_controller.mission_step()
+            if self.mission_control.mission.mission_status == STATUS.IN_PROGRESS:
+                self.mission_control.mission_step()
             self.env = EnvironmentAPI.get_env(self.get_location())
             self.radar.update_sense_circle(self.env, self.get_velocity().get_angle())
 

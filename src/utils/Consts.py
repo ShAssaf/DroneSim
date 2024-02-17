@@ -13,7 +13,7 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9988
+    PORT = 9985
     GRAPH_PORT = 9995
     ENV_PORT = 9996
 

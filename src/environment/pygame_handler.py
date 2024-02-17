@@ -273,5 +273,5 @@ class PygameHandler:
     def add_drone(len_drones):
         # todo: add drone in subprocess
         a = DroneAgent(name=f"drone{len_drones}")
-        a.drone.mission_controller.set_mission(Mission(a.drone.get_location(), ThreeDVector(1000, 2500, 0)))
-        a.drone.mission_controller.mission_start()
+        a.drone.mission_control.set_mission(Mission(a.drone.get_location(), ThreeDVector(1000, 2500, 0)))
+        a.drone.mission_control.mission_start()

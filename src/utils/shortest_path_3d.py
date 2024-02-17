@@ -9,15 +9,15 @@ import networkx as nx
 from src.utils.Consts import Paths, Consts
 
 
-def shortest_path_3d_environment(grid, start, end):
-    # Create a graph from the 2D grid
-    graph = create_graph(grid)
-
-    # save graph object to file
-    pickle.dump(graph, open('filename.pickle', 'wb'))
-    path = nx.shortest_path(graph, start, end, weight='weight')
-
-    return path
+# def shortest_path_3d_environment(grid, start, end):
+#     # Create a graph from the 2D grid
+#     graph = create_graph(grid)
+#
+#     # save graph object to file
+#     pickle.dump(graph, open('filename.pickle', 'wb'))
+#     path = nx.shortest_path(graph, start, end, weight='weight')
+#
+#     return path
 
 
 def create_graph(grid, scale_down=10):
@@ -51,28 +51,28 @@ def create_graph(grid, scale_down=10):
     return graph
 
 
-def generate_paths():
-    # Load the graph object from file
-    paths = []
-    graph = pickle.load(open(Paths.ENVIRONMENT_GRAPH, 'rb'))
-    image = cv2.imread("/Users/shlomoassaf/reps/DroneSim/data/part_new_york_3kmm.jpg", cv2.IMREAD_GRAYSCALE)
-    height_zero_points = [(x, y) for x in range(0, len(image), 10) for y in range(0, len(image[0]), 10) if
-                          image[x][y] == 0]
-    c = 0
-    while True:
-        if c > 1000:
-            break
-        c += 1
-        points = random.choices(height_zero_points, k=2)
-
-        # if distance > 300 then add to result
-        if math.sqrt((points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) > 300:
-            path = nx.shortest_path(graph, (points[0][0], points[0][1], 0), (points[1][0], points[1][1], 0),
-                                    weight='weight')
-            if len(path) > 0:
-                paths.append(((points[0][0], points[0][1], 0), (points[1][0], points[1][1], 0), path))
-                print(path)
-                print(len(paths))
-
-            pickle.dump(paths, open(Paths.ENVIRONMENT_PATHS, 'wb'))
-            print("Saved")
+# def generate_paths():
+#     # Load the graph object from file
+#     paths = []
+#     graph = pickle.load(open(Paths.ENVIRONMENT_GRAPH, 'rb'))
+#     image = cv2.imread("/Users/shlomoassaf/reps/DroneSim/data/part_new_york_3kmm.jpg", cv2.IMREAD_GRAYSCALE)
+#     height_zero_points = [(x, y) for x in range(0, len(image), 10) for y in range(0, len(image[0]), 10) if
+#                           image[x][y] == 0]
+#     c = 0
+#     while True:
+#         if c > 1000:
+#             break
+#         c += 1
+#         points = random.choices(height_zero_points, k=2)
+#
+#         # if distance > 300 then add to result
+#         if math.sqrt((points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) > 300:
+#             path = nx.shortest_path(graph, (points[0][0], points[0][1], 0), (points[1][0], points[1][1], 0),
+#                                     weight='weight')
+#             if len(path) > 0:
+#                 paths.append(((points[0][0], points[0][1], 0), (points[1][0], points[1][1], 0), path))
+#                 print(path)
+#                 print(len(paths))
+#
+#             pickle.dump(paths, open(Paths.ENVIRONMENT_PATHS, 'wb'))
+#             print("Saved")

@@ -18,13 +18,13 @@ class Main:
 def main():
     pg = Main()
     missions = pickle.load(open(Paths.ENVIRONMENT_PATHS, 'rb'))
-    for i in range(20):
+    for i in range(1):
         m = missions[i]
-        d = DroneAgent(name=f"drone_{i}", initial_position=ThreeDVector(threeDtuple=m[0], y_x_z=True),
-                       target=ThreeDVector(threeDtuple=m[1], y_x_z=True))
-        d.drone.mission_controller.set_mission(
-            Mission(ThreeDVector(threeDtuple=m[0], y_x_z=True), ThreeDVector(threeDtuple=m[1],y_x_z=True), path=m[2]))
-        d.drone.mission_controller.mission_start()
+        d = DroneAgent(name=f"drone_{i}", initial_position=ThreeDVector(threeDtuple=m[0]),
+                       target=ThreeDVector(threeDtuple=m[1]))
+        d.drone.mission_control.set_mission(
+            Mission(ThreeDVector(threeDtuple=m[0]), ThreeDVector(threeDtuple=m[1]), path=m[2]))
+        d.drone.mission_control.mission_start()
     pg.drones = pg.pygame_handler.start_simulation()
 
 

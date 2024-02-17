@@ -14,6 +14,7 @@ class STATUS(Enum):
     IN_PROGRESS = 1
     COMPLETED = 2
     FAILED = 3
+    SUSPENDED = 4
 
 
 class Mission:
@@ -38,7 +39,7 @@ class Mission:
 
 class Path:
     def __init__(self, points):
-        self.points = [[p[1], p[0], p[2]] for p in points]  # need to inverse graph coordinates for X Y Z
+        self.points = points
         self.current_point = 0
 
     def set_next_point(self):
@@ -52,12 +53,10 @@ class Path:
 
     @staticmethod
     def get_path_from_server(start, target):
-        raise Exception("Path.get_path_from_server need to verify X Y Z order")
         data = {"start": (start[0], start[1], start[2]), "target": (target[0], target[1], target[2])}
         response = requests.post(f"http://127.0.0.1:{Consts.GRAPH_PORT}/graph", json=data)
         if response.status_code == 200:
-            result = [(i[1], i[0], i[2]) for i in response.json()["result"]]  # need to inverse graph coordinates
-
+            result = response.json()["result"]
             return result
         else:
             print("Error:", response.json()["error"])

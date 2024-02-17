@@ -42,7 +42,7 @@ def perform_calculation(data):
     global env_graph
     print("Performing calculation with data: ", data)
     print("Start: ", data['start'], " Target: ", data['target'])
-    result = nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']),weight='weight')
+    result = nx.shortest_path(env_graph, tuple(data['start']), tuple(data['target']), weight='weight')
     print("Calculation completed. Result: ", result)
     return result
 
