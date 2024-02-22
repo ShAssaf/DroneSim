@@ -25,10 +25,10 @@ class MapObject:
         return pd.read_csv(Paths.MAP_BOUNDS_PATH)
 
     @staticmethod
-    def set_map_bounds(southwest_lat, southwest_long, northeast_lat, northeast_long, comment):
+    def set_map_bounds(southwest_lat, southwest_long, northeast_lat, northeast_long, comment, func_index=[0]):
         df = pd.read_csv(Paths.MAP_BOUNDS_PATH)
         new_record = pd.DataFrame({'minx': southwest_long, 'miny': southwest_lat, 'maxx': northeast_long,
-                                   'maxy': northeast_lat, 'comment': comment}, index=[0])
+                                   'maxy': northeast_lat, 'comment': comment}, index=func_index)#[0])
 
         # Check if the record already exists in the DataFrame
         is_duplicate = df.isin(new_record).all(axis=None)
@@ -58,7 +58,7 @@ class MapObject:
         # Convert the coordinates from WGS84 to UTM
         xmin, ymin = transformer.transform(bounds['minx'].values, bounds['miny'].values)
         xmax, ymax = transformer.transform(bounds['maxx'].values, bounds['maxy'].values)
-        MapObject.set_map_bounds(ymin, xmin, ymax, xmax, 'scraper_bounds_utm')
+        MapObject.set_map_bounds(ymin, xmin, ymax, xmax, 'scraper_bounds_utm', func_index=None)
 
     @staticmethod
     def rescale_map_image(mode='no_bg', scale_factor=1):
@@ -79,7 +79,7 @@ class MapObject:
         y = map_bounds['maxy'].values[0] - map_bounds['miny'].values[0]
 
         # Resize the image
-        image = image.resize((round(x / scale_factor), round(y / scale_factor)), Image.ANTIALIAS)
+        image = image.resize((int(round(x / scale_factor)), int(round(y / scale_factor))), Image.ANTIALIAS)
         image.save(path.rsplit('/', 1)[0] + f'/rescaled_map_1_pixel_per_{scale_factor}_meter.png')
 
     @staticmethod
