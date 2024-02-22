@@ -12,11 +12,11 @@ app = Flask(__name__)
 env_graph = None
 
 
-def load_graph(path_of_map):  # this takes ~ 2min on Shlomo's machine when the graph exists
+def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
     print("Loading graph...")
     if not exists(Paths.ENVIRONMENT_GRAPH):
         print("Graph does not exist. Creating graph...")
-        create_graph(cv2.imread(path_of_map, cv2.IMREAD_GRAYSCALE), scale_down=10)
+        create_graph(cv2.imread(Paths.MAP_NO_BG_PATH, cv2.IMREAD_GRAYSCALE), scale_down=10)
     with open(Paths.ENVIRONMENT_GRAPH, "rb") as file:
         global env_graph
         env_graph = pickle.load(file)
@@ -49,7 +49,7 @@ def perform_calculation(data):
 
 # push context manually to app
 with app.app_context():
-    load_graph(path_of_map=Paths.MAP_BG_PATH)
+    load_graph()
 
 if __name__ == '__main__':
     print("Starting server...")

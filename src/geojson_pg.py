@@ -130,60 +130,8 @@ class GeoJsonParser:
             all_pints = [sim_map(point[0], point[1]) for point in all_pints]
             sim_map.plot(*zip(*all_pints), marker=None, color='red')
 
-    def plot_map(self, building):
-        building = self.get_all_buildings()
-        b = pd.read_csv(Paths.MAP_BOUNDS_PATH)
-        b = [[b['minx'][0]-5, b['miny'][0]-5], [b['maxx'][0]+10, b['maxy'][0]+10]]
-        m = GeoJsonParser.create_boarder_for_plotting(b)
-        for i in range(0, len(building)):
-            for j in range(0, len(building[i])):
-                GeoJsonParser.add_points_for_plotting(building[i][j], m)
-        plt.show()
 
-    def plot_heat_map(self):
-        buildings = self.get_all_buildings()
-        b = pd.read_csv(Paths.MAP_BOUNDS_PATH)
-        b = [[b['minx'][0], b['miny'][0]], [b['maxx'][0], b['maxy'][0]]]
-        b_map = GeoJsonParser.create_boarder_for_plotting(b)
-        for coordinates in buildings:
-            if 'height' in coordinates['properties']:
-                try:
-                    if coordinates['properties']['height'] > '350':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='red')
-                    elif coordinates['properties']['height'] > '300':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='yellow')
-                    elif coordinates['properties']['height'] > '250':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='orange')
-                    elif coordinates['properties']['height'] > '200':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='pink')
-                    elif coordinates['properties']['height'] > '100':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='blue')
-                    elif coordinates['properties']['height'] > '50':
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='purple')
-                    else:
-                        GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                              color='green')
-                except:
-                    save_list_to_file(coordinates['geometry']['coordinates'], './data/logs/error_log.txt')
-            else:
-                try:
-                    GeoJsonParser.add_points_for_plotting(coordinates['geometry']['coordinates'][0], b_map,
-                                                          color='black')
-                except:
-                    save_list_to_file(coordinates['geometry']['coordinates'], './data/logs/error_log.txt')
 
-        background_img = plt.imread(Paths.MAP_PATH)
-
-        # Display the image as a background
-        b_map.imshow(background_img, interpolation='lanczos', origin='upper', alpha=0.8)
-
-        plt.show()
 
 
 def save_list_to_file(data, file_name):

@@ -1,3 +1,6 @@
+import os
+
+
 class Consts:
     CLOSE_RANGE = 20
     MEDIUM_RANGE = 100
@@ -23,12 +26,12 @@ MANUAL_DRONE = True
 
 
 class Paths:
-    BASE_PATH = 'D:/תומר/לימודים/שנה ד/601/project/DroneSim'
+    BASE_PATH = 'file://' + os.getcwd()
     ENVIRONMENT_PATHS = 'data/optional_paths.pickle'
     TMP = '/tmp/'
     MAPS = 'data/maps'
     MAP_BOUNDS_PATH = 'data/csvs/map_bounds.csv'
-    MAP_PATH = MAPS + '/no_bg_result.png'
+    MAP_NO_BG_PATH = MAPS + '/no_bg_result.png'
     MAP_BG_PATH = MAPS + '/bg_result.png'
     RESCALED_MAP_PATH = MAPS + '/rescaled_map_1_pixel_per_{scale}_meter.png'
     RESCALED_BG_MAP_PATH = MAPS + '/rescaled_map_1_pixel_per_{scale}_meter.png'

@@ -11,12 +11,12 @@ def main(mode='no_bg', scale=1):
     :param mode: the mode of the map, can be 'no_bg' or 'bg'
     :param scale: the scale of the map image, can be 1 or 2
     """
-    map_creator_main(geojson_path=Paths.GEOJSON_PATH)
-    map_scraper_main(mode=mode)
+   # map_creator_main(geojson_path=Paths.GEOJSON_PATH)
+    #map_scraper_main(mode=mode)
     map_stitcher_main(mode=mode)
     MapObject.rescale_map_image(mode=mode, scale_factor=scale)
     MapObject.clean_map_image(Paths.RESCALED_MAP_PATH.format(scale=scale))
 
 
 if __name__ == "__main__":
-    main('bg')
+    main()

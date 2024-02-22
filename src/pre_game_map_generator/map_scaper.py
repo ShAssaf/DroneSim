@@ -17,7 +17,7 @@ def move_browser_view(driver, map_variable, center_lat, new_center_lng):
         .format(map=map_variable, lat=center_lat, lng=new_center_lng)
     )
     driver.execute_script(pan_to_js)
-    sleep(3)
+    sleep(1)
 
 
 def get_bounds_from_browser(driver, map_variable):

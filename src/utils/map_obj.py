@@ -31,7 +31,7 @@ class MapObject:
                                    'maxy': northeast_lat, 'comment': comment}, index=func_index)#[0])
 
         # Check if the record already exists in the DataFrame
-        is_duplicate = df.isin(new_record).all(axis=None)
+        is_duplicate = new_record.isin(df).all(axis=None)
         if not is_duplicate:
             # Insert the new record into the DataFrame
             df = pd.concat([df, new_record], ignore_index=True)
@@ -68,7 +68,7 @@ class MapObject:
         if mode == 'bg':
             path = Paths.MAP_BG_PATH
         else:
-            path = Paths.MAP_PATH
+            path = Paths.MAP_NO_BG_PATH
 
         MapObject.convert_coordinates_to_utm()
         image = Image.open(path)
@@ -79,7 +79,7 @@ class MapObject:
         y = map_bounds['maxy'].values[0] - map_bounds['miny'].values[0]
 
         # Resize the image
-        image = image.resize((int(round(x / scale_factor)), int(round(y / scale_factor))), Image.ANTIALIAS)
+        image = image.resize((int(round(x / scale_factor)), int(round(y / scale_factor))))
         image.save(path.rsplit('/', 1)[0] + f'/rescaled_map_1_pixel_per_{scale_factor}_meter.png')
 
     @staticmethod
