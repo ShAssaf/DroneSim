@@ -2,6 +2,10 @@ import pickle
 from os.path import exists
 
 import cv2
+#cv2.CV_IO_MAX_IMAGE_PIXELS = 2 ** 128
+# cv2.CV_IO_MAX_IMAGE_WIDTH = 1000000
+# cv2.CV_IO_MAX_IMAGE_HEIGHT = 1000000
+# cv2.CV_IO_MAX_IMAGE_PIXELS = 17179869184
 import networkx as nx
 from flask import Flask, request, jsonify
 
@@ -16,7 +20,8 @@ def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
     print("Loading graph...")
     if not exists(Paths.ENVIRONMENT_GRAPH):
         print("Graph does not exist. Creating graph...")
-        create_graph(cv2.imread(Paths.MAP_NO_BG_PATH, cv2.IMREAD_GRAYSCALE), scale_down=10)
+        create_graph(cv2.imread("data/maps/rescaled_map_1_pixel_per_1_meter_building_deionised.jpg", cv2.IMREAD_GRAYSCALE), scale_down=10)
+        # tomer add fix this path
     with open(Paths.ENVIRONMENT_GRAPH, "rb") as file:
         global env_graph
         env_graph = pickle.load(file)
