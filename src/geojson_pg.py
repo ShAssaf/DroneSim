@@ -1,12 +1,8 @@
-import math
 import geojson
-import matplotlib.pyplot as plt
-import pandas as pd
+import json
 import pyproj
-from mpl_toolkits.basemap import Basemap
-import geopandas as gpd
 from src.utils.Consts import Paths
-
+import pandas as pd
 
 # os.environ['PROJ_LIB'] = r'D:\ProgramData\python\Library\share'
 
@@ -139,6 +135,24 @@ def save_list_to_file(data, file_name):
         for item in data:
             f.write(str(item) + '\n')
 
+def save_list_to_geojson(data):
+    # Serialize the list to JSON format
+    geojson_data = {
+        "type": "FeatureCollection",
+        "features": data
+    }
+    # Write the JSON string to a file
+    with open(Paths.BUILDINGS_GEOJSON_PATH, "w") as f:
+        json.dump(geojson_data, f)
+
+
+def clean_csv(file_path):
+    # Read CSV file into a DataFrame, skipping all rows except the first
+    df = pd.read_csv(file_path, nrows=0, skip_blank_lines=True)
+    print(str(df))
+    # Write the DataFrame back to the CSV file
+    df.to_csv(file_path, index=False, line_terminator='\n')
+
 
 def determine_utm_zone(longitude):
     return int((longitude + 180) / 6) + 1
@@ -152,6 +166,8 @@ def convert_wgs_to_utm(lat, lon):
 
 
 a = GeoJsonParser()
+clean_csv(Paths.MAP_BOUNDS_PATH)
+save_list_to_geojson(a.get_all_buildings())
 # a.plot_heat_map()
 # a.plot_map(a.get_building_coordinates('tower'))
 # save_list_to_file(a.get_all_buildings(), 'buildings.txt')
