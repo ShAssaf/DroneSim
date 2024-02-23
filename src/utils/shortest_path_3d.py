@@ -1,6 +1,7 @@
 import math
 import pickle
 from itertools import product
+from tqdm import tqdm
 
 import networkx as nx
 
@@ -21,7 +22,7 @@ def create_graph(grid, scale_down=10):
             return False
         return True
 
-    for i in range(0, rows, scale_down):
+    for i in tqdm(range(0, rows, scale_down)):
         for j in range(0, cols, scale_down):
             for h in range(0, 401, scale_down):
                 for dx, dy, dz in combs:
