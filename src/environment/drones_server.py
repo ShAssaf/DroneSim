@@ -5,7 +5,7 @@ from time import sleep
 
 
 from src.utils.Consts import Consts
-from src.environment.EnvDrone import EnvDroneObj
+from src.environment.env_drone import EnvDroneObj
 
 
 class DroneServer:
