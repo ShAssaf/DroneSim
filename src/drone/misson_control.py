@@ -1,7 +1,7 @@
-from enum import Enum
-
 import requests
+from random import randint
 
+from enum import Enumimport requests
 from src.utils.Consts import Consts
 from src.utils.logger import get_logger
 from src.utils.util_classes import ThreeDVector
@@ -82,6 +82,13 @@ class MissionControl:
                 closet_drone = drone
                 dis = cur_dis
         return closet_drone
+
+    def generate_mission(self, start, target):
+        return Mission(start, target)
+
+    def generate_random_mission(self):
+        # rand start and target and check if they are valid
+        start = ThreeDVector(random, 0, 0)
 
 
 class VehicleMissionControl:

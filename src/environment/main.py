@@ -1,6 +1,6 @@
 import pickle
 
-from src.RL.drone_agent_q_learning import DroneAgent
+from src.drone.drone_agent import DroneAgent
 from src.drone.misson_control import MissionControl, Mission
 from src.environment.drones_server import DroneServer
 from src.environment.pygame_handler import PygameHandler
@@ -17,9 +17,7 @@ class Main:
 
 def main():
     pg = Main()
-    missions = pickle.load(open(Paths.ENVIRONMENT_PATHS, 'rb'))
     for i in range(1):
-        m = missions[i]
         d = DroneAgent(name=f"drone_{i}", initial_position=ThreeDVector(threeDtuple=m[0]),
                        target=ThreeDVector(threeDtuple=m[1]))
         d.drone.mission_control.set_mission(
