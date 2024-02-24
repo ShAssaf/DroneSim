@@ -8,10 +8,10 @@ from src.utils.shortest_path_3d import create_graph, Neo4jClient
 app = Flask(__name__)
 
 
-def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
+def load_graph():
     print("Loading graph...")
     if not client.check_if_graph_exists():
-        # todo : fix path
+        print("Graph does not exist. Creating new graph... this may take a while.(~20 minutes)")
         create_graph(cv2.imread(Paths.RESCALED_MAP_PATH,
                                 cv2.IMREAD_GRAYSCALE), scale_down=10)
 
