@@ -2,7 +2,7 @@ import cv2
 import networkx as nx
 from flask import Flask, request, jsonify
 
-from src.utils.Consts import Consts
+from src.utils.Consts import Consts, Paths
 from src.utils.shortest_path_3d import create_graph, Neo4jClient
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ def load_graph():  # this takes ~ 2min on Shlomo's machine when the graph exists
     print("Loading graph...")
     if not client.check_if_graph_exists():
         # todo : fix path
-        create_graph(cv2.imread("data/maps/rescaled_map_1_pixel_per_1_meter_building_deionised.jpg",
+        create_graph(cv2.imread(Paths.RESCALED_MAP_PATH,
                                 cv2.IMREAD_GRAYSCALE), scale_down=10)
 
 
