@@ -43,7 +43,6 @@ class Paths:
     ENVIRONMENT_GRAPH = 'data/environment_graph.pickle'
 
 
-
 class BatterySpec:
     VOLTAGE = 3.7
     CAPACITY = 3000  # in mAh
@@ -64,7 +63,7 @@ class SmallDroneDefaults:
 class MapConsts:
     SCREEN_WIDTH = 500
     SCREEN_HEIGHT = 500
-    MAP_PATH = 'data/part_new_york_3kmm.jpg'
+    MAP_PATH = Paths.MAPS + 'rescaled_map_1_pixel_per_1_meter_building_deionised.jpg'
 
 
 class EnvironmentConsts:

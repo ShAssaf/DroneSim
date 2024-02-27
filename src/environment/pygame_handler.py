@@ -1,6 +1,6 @@
 import pygame
 
-from src.RL.drone_agent_q_learning import DroneAgent
+from src.drone.drone_agent import DroneAgent
 from src.drone.misson_control import Mission
 from src.utils.Consts import Consts, MapConsts, EnvironmentConsts, MANUAL_DRONE, Paths
 from src.utils.map_obj import MapObject

@@ -1,7 +1,6 @@
+from enum import Enum
+import random
 import requests
-from random import randint
-
-from enum import Enumimport requests
 from src.utils.Consts import Consts
 from src.utils.logger import get_logger
 from src.utils.util_classes import ThreeDVector
