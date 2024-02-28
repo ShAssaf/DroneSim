@@ -42,6 +42,7 @@ def perform_calculation(data):
 # push context manually to app
 with app.app_context():
     client = Neo4jClient()
+    load_graph()
 
 if __name__ == '__main__':
     print("Starting server...")
