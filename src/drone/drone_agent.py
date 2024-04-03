@@ -10,8 +10,7 @@ from src.utils.util_classes import ThreeDVector, InternalGPS
 
 
 class DroneAgent:
-    def __init__(self, name: str, target: ThreeDVector = ThreeDVector(200, 200, 0),
-                 initial_position: ThreeDVector = ThreeDVector(500, 500, 0)):
+    def __init__(self, name: str, initial_position: ThreeDVector = ThreeDVector(500, 500, 0)):
         self.drone = SmallDrone(name, InternalGPS(initial_position))
         self._socket_to_server = None
         self.target = self.drone.mission_control.mission.target
@@ -110,6 +109,10 @@ class DroneAgent:
 
         # Start the thread
         thread.start()
+
+    def set_mission(self, mission):
+        self.drone.mission_control.set_mission(mission)
+
 
     def communicate_with_server(self):
 

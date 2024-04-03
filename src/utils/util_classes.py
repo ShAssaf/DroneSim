@@ -158,6 +158,7 @@ def create_scaled_maps():
     for i in [1, 2, 4, 8]:
         if os.path.exists(f'{Paths.TMP}/scaled_map_{i}.png'):
             continue
+        print(f'Creating scaled map {i}')
         scale_factor = i
         # Open the image file
         img = Image.open(MapConsts.MAP_PATH)

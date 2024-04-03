@@ -34,7 +34,7 @@ def calculate():
 def perform_calculation(data):
     print("Performing calculation with data: ", data)
     print("Start: ", data['start'], " Target: ", data['target'])
-    result = client.get_path_between_nodes(data['start'][0], data['start'][1], data['start'][2])
+    result = client.get_path_between_nodes(data['start'], data['target'])
     print("Calculation completed. Result: ", result)
     return result
 

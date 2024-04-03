@@ -100,6 +100,7 @@ class Neo4jClient:
                 """
                 MATCH (n)
                 RETURN n
+                LIMIT 1
                 """
             )
             print("Graph exists") if result.single() else print("Graph does not exist")

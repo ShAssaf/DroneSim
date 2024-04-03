@@ -16,7 +16,7 @@ class Consts:
     MAX_RANGE_FOR_COLOR = 255
     FONT_SIZE = 12
     HOST = '127.0.0.1'
-    PORT = 9981
+    PORT = 9980
     GRAPH_PORT = 9995
     ENV_PORT = 9996
 
@@ -63,7 +63,7 @@ class SmallDroneDefaults:
 class MapConsts:
     SCREEN_WIDTH = 500
     SCREEN_HEIGHT = 500
-    MAP_PATH = Paths.MAPS + 'rescaled_map_1_pixel_per_1_meter_building_deionised.jpg'
+    MAP_PATH = Paths.MAPS + '/rescaled_map_1_pixel_per_1_meter_building_deionised.jpg'
 
 
 class EnvironmentConsts:

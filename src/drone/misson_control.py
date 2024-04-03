@@ -1,7 +1,10 @@
-from enum import Enum
 import random
+from enum import Enum
+
+import cv2
 import requests
-from src.utils.Consts import Consts
+
+from src.utils.Consts import Consts, MapConsts
 from src.utils.logger import get_logger
 from src.utils.util_classes import ThreeDVector
 
@@ -85,9 +88,16 @@ class MissionControl:
     def generate_mission(self, start, target):
         return Mission(start, target)
 
-    def generate_random_mission(self):
-        # rand start and target and check if they are valid
-        start = ThreeDVector(random, 0, 0)
+    @staticmethod
+    def generate_random_mission():
+        map = cv2.imread(MapConsts.MAP_PATH, cv2.IMREAD_GRAYSCALE)
+        while True:
+            start = ThreeDVector(random.randint(0, 1000)*10, random.randint(0, 1000)*10, 0)
+            target = ThreeDVector(random.randint(0, 1000)*10, random.randint(0, 1000)*10, 0)
+            if map[start[0], start[1]] == 0 and map[target[0], target[1]] == 0:
+                break
+        return Mission(start, target)
+
 
 
 class VehicleMissionControl:
@@ -113,3 +123,4 @@ class VehicleMissionControl:
                 self.vehicle.motion_controller.stop()
                 return
         self.vehicle.motion_controller.go_to_point(self.mission.path.get_next_point())
+
