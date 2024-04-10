@@ -174,8 +174,8 @@ class PygameHandler:
     def draw_map(self):
         # Blit a portion of the map.osm surface onto the viewport surface, based on the current position of the viewport
         if self.mode == EnvironmentConsts.FOCUS_DRONE:
-            x = self.drones[self.chosen_drone_index].last_location.x * self.zoom_factor - MapConsts.SCREEN_WIDTH / 2
-            y = self.drones[self.chosen_drone_index].last_location.y * self.zoom_factor - MapConsts.SCREEN_HEIGHT / 2
+            x = self.drones[self.chosen_drone_index].last_location.x*self.zoom_factor - MapConsts.SCREEN_WIDTH / 2
+            y = self.drones[self.chosen_drone_index].last_location.y*self.zoom_factor - MapConsts.SCREEN_HEIGHT / 2
             if x < 0:
                 x = 0
             elif x > self.map_object.MAP_WIDTH - MapConsts.SCREEN_WIDTH:

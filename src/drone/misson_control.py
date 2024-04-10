@@ -91,13 +91,14 @@ class MissionControl:
     @staticmethod
     def generate_random_mission():
         map = cv2.imread(MapConsts.MAP_PATH, cv2.IMREAD_GRAYSCALE)
+        mapy, mapx = map.shape
         while True:
-            start = ThreeDVector(random.randint(0, 1000)*10, random.randint(0, 1000)*10, 0)
-            target = ThreeDVector(random.randint(0, 1000)*10, random.randint(0, 1000)*10, 0)
-            if map[start[0], start[1]] == 0 and map[target[0], target[1]] == 0:
-                break
-        return Mission(start, target)
-
+            start = ThreeDVector(random.randint(0, mapx)//10 * 10, random.randint(0, mapy)//10 * 10, 0)
+            target = ThreeDVector(random.randint(0, mapx)//10 * 10, random.randint(0, mapy)//10 * 10, 0)
+            if map[start.y, start.x] == 0 and map[target.y, target.x] == 0:
+                m = Mission(start, target)
+                if m.path.points is not None:
+                    return m
 
 
 class VehicleMissionControl:
@@ -123,4 +124,3 @@ class VehicleMissionControl:
                 self.vehicle.motion_controller.stop()
                 return
         self.vehicle.motion_controller.go_to_point(self.mission.path.get_next_point())
-
