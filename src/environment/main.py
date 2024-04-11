@@ -1,10 +1,9 @@
 import pickle
 
 from src.drone.drone_agent import DroneAgent
-from src.drone.misson_control import MissionControl, Mission
+from src.drone.misson_control import MissionControl
 from src.environment.drones_server import DroneServer
 from src.environment.pygame_handler import PygameHandler
-from src.utils.Consts import Paths
 from src.utils.util_classes import ThreeDVector
 
 
@@ -17,10 +16,13 @@ class Main:
 
 def main():
     pg = Main()
-    for i in range(1):
-        random_mission = MissionControl.generate_random_mission()
+    drones = []
+    for i in range(10):
+        random_mission = MissionControl.load_valid_mission()
         d = DroneAgent(name=f"drone_{i}", initial_position=ThreeDVector(threeDtuple=random_mission.start_point))
         d.drone.mission_control.set_mission(random_mission)
+        drones.append(d)
+    for d in drones:
         d.drone.mission_control.mission_start()
     pg.pygame_handler.start_simulation()  # todo move it to init
 

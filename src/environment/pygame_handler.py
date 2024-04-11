@@ -44,7 +44,7 @@ class PygameHandler:
 
     def start_simulation(self):
         while self.running:
-            # self.clock.tick(self.fps)
+            self.clock.tick(self.fps)
             self.handle_events()
             self.draw_map()
             self.draw_on_screen()

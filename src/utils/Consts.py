@@ -2,6 +2,7 @@ import os
 
 
 class Consts:
+
     CLOSE_RANGE = 20
     MEDIUM_RANGE = 100
     FAR_RANGE = 500
@@ -26,6 +27,7 @@ MANUAL_DRONE = True
 
 
 class Paths:
+    PATH_FILE = 'data/paths.txt'
     BASE_PATH = 'file://' + os.getcwd()
     ENVIRONMENT_PATHS = 'data/optional_paths.pickle'
     TMP = '/tmp/'

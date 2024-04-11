@@ -1,10 +1,11 @@
+import ast
 import random
 from enum import Enum
 
 import cv2
 import requests
 
-from src.utils.Consts import Consts, MapConsts
+from src.utils.Consts import Consts, MapConsts, Paths
 from src.utils.logger import get_logger
 from src.utils.util_classes import ThreeDVector
 
@@ -61,8 +62,19 @@ class Path:
             result = response.json()["result"]
             return result
         else:
-            print("Error:", response.json()["error"])
+            print(f"Error - NO path from {start} to {target} :", response.json()["error"])
             return None
+
+
+def save_path(points):
+    # save the path in a file if it is not already saved
+    with open(Paths.PATH_FILE, 'r') as f:
+        for line in f:
+            if line == str(points) + '\n':
+                return
+    with open(Paths.PATH_FILE, 'a') as f:
+        f.write(str(points) + '\n')
+
 
 
 class MissionControl:
@@ -98,7 +110,18 @@ class MissionControl:
             if map[start.y, start.x] == 0 and map[target.y, target.x] == 0:
                 m = Mission(start, target)
                 if m.path.points is not None:
+                    save_path(m.path.points)
                     return m
+    @staticmethod
+    def load_valid_mission():
+        lines = []
+        with open('data/paths.txt', 'r') as f:
+            for line in f:
+                lines.append(ast.literal_eval(line))
+        random_line = random.choice(lines)
+        return Mission(ThreeDVector(int(random_line[0][0]), int(random_line[0][1]), 0),
+                       ThreeDVector(int(random_line[-1][0]), int(random_line[-1][1]), 0),
+                       path=random_line)
 
 
 class VehicleMissionControl:

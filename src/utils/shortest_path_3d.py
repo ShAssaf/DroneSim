@@ -45,14 +45,14 @@ def create_graph(grid, scale_down=10):
                             math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
                         ))
     # Write nodes to CSV
-    with open('nodes.csv', 'w', newline='') as csvfile:
+    with open('data/nodes.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['id:ID', 'y', 'x', 'z'])
         for idx, node in enumerate(nodes):
             writer.writerow([idx] + list(node))
 
     # Write relations to CSV
-    with open('relations.csv', 'w', newline='') as csvfile:
+    with open('data/relations.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow([':START_ID', ':END_ID', 'distance:FLOAT'])
         for rel in relations:

@@ -148,7 +148,7 @@ class TwoDRadar:
 # calc_execution_time_list = []
 #
 # for i in range(100):
-#     img = get_ramdom_image_part('data/maps/no_bg/rescaled_map_1_pixel_per_1_meter_building_deionised.jpg', (1000, 1000))
+#     img = get_ramdom_image_part('data/maps/no_bg/largeNY.jpg', (1000, 1000))
 #     angle = np.random.randint(-180, 180)
 #     start_time = time.time()
 #     rotate(img, angle)
