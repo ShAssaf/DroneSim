@@ -51,7 +51,7 @@ class MotionControl:
                                   velocity.z)
 
     def go_to_point(self, target):  # y x z
-        logger.info(f"{self.vehicle.name}: Going to point {target}")
+        #logger.info(f"{self.vehicle.name}: Going to point {target}")
         """get a 3dd point and adapt the drone velocity to go to that point"""
         dx, dy, dz = target[0] - self.vehicle.get_location().x, target[1] - self.vehicle.get_location().y, \
                      target[2] - self.vehicle.get_location().z
